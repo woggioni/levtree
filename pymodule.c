@@ -7,6 +7,7 @@
 typedef struct {
     PyObject_HEAD
     levtree *tree;
+    PyObject *wordlist;
     /* Type-specific fields go here. */
 } levtree_levtree_obj;
 
@@ -16,6 +17,7 @@ levtree_dealloc(levtree_levtree_obj* self)
 {
     levtree_free(self->tree);
     free(self->tree);
+    Py_DECREF(self->wordlist);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -38,18 +40,17 @@ levtree_levtree_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
     char** carg;        /* argument to pass to the C function*/
     unsigned i;
 
-    PyObject * listObj; /* the list of strings */
     PyObject * strObj;  /* one string in the list */
 
     /* the O! parses for a Python object (listObj) checked
        to be of type PyList_Type */
-    if (! PyArg_ParseTuple( args, "O!", &PyList_Type, &listObj))
+    if (! PyArg_ParseTuple( args, "O!", &PyList_Type, &self->wordlist))
     {
         return -1;
     }
-
+    Py_INCREF(self->wordlist);
     /* get the number of lines passed to us */
-    numLines = PyList_Size(listObj);
+    numLines = PyList_Size(self->wordlist);
     carg = malloc(sizeof(char*)*numLines);
 
     /* should raise an error here. */
@@ -65,7 +66,7 @@ levtree_levtree_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
     {
 
         /* grab the string object from the next element of the list */
-        strObj = PyList_GetItem(listObj, i); /* Can't fail */
+        strObj = PyList_GetItem(self->wordlist, i); /* Can't fail */
 
         /* make it a string */
         carg[i] = PyString_AsString( strObj );
@@ -80,24 +81,37 @@ static PyObject *
 levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds)
 {
     char* wordkey;
-    index_t number_of_matches;
+    index_t number_of_matches=1;
+    byte_t case_sensitive=0;
     index_t i;
-    static char *kwlist[] = {"wordkey","number_of_matches", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|i", kwlist,
-                                      &wordkey, &number_of_matches))
+    PyObject* boolean;
+    static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iO", kwlist,
+                                      &wordkey, &number_of_matches,&boolean))
     {
-        return -1;
+        return NULL;
     }
 
+    if(PyObject_IsTrue(boolean))
+    {
+        case_sensitive=1;
+    }
+    if(number_of_matches > self->tree->entry_count) // if some idiot enters a number of results bigger than the list of words given in the constructor
+    {
+        number_of_matches = self->tree->entry_count;
+    }
+    self->tree->case_sensitive=case_sensitive;
     //printf("matches: %u", number_of_matches);
     levtree_search(self->tree, wordkey, number_of_matches);
     levtree_result res;
-    PyObject* tmp;
+    PyObject* tmp, *string;
     PyObject* list = PyList_New(number_of_matches);
     for(i=0; i<number_of_matches; i++)
     {
         res = levtree_get_result(self->tree,i);
-        tmp = Py_BuildValue("{sIsI}","index",res.id,"distance",res.distance);
+        string = PyList_GetItem(self->wordlist,res.id);
+        //printf("%p\t id: %u\n",string,res.id);
+        tmp = Py_BuildValue("(OI)",string,res.distance);
         PyList_SetItem(list,i,tmp);
     }
     return list;
@@ -113,7 +127,7 @@ static PyMemberDef Levtree_members[] =
 
 static PyMethodDef Levtree_methods[] =
 {
-    {"search", levtree_levtree_search, METH_VARARGS, "Levenshtein tree search method"},
+    {"search", levtree_levtree_search, METH_KEYWORDS, "Levenshtein tree search method"},
     //{"result", levtree_get_result_py, METH_VARARGS, "Levenshtein tree get result method"},
     {NULL}  /* Sentinel */
 };
