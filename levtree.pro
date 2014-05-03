@@ -11,3 +11,9 @@ HEADERS += \
     levnode.h \
     levtree.h
 
+OTHER_FILES += \
+    pymodule.c\
+    setup.py
+
+
+

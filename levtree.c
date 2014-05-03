@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "levtree.h"
+#include "levnode.c"
 
 #define min(x,y) ((x) < (y) ? (x) : (y))
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
@@ -242,7 +242,7 @@ void levtree_add_word(levtree* tree, const char* keyword, index_t id)
     }
 }
 
-void levtree_init(levtree *tree, const char **words, index_t words_count, index_t standing_size)
+void levtree_init(levtree *tree, char **words, index_t words_count)
 {
     tree->node_count = 0;
     tree->node_size = words_count*2;

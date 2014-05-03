@@ -34,7 +34,7 @@ typedef struct
     levtree_standing* standing;
 }levtree;
 
-void levtree_init(levtree* tree, const char** words, index_t words_count, index_t standing_size);
+void levtree_init(levtree* tree, char **words, index_t words_count);
 void levtree_free(levtree* tree);
 void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches);
 void levtree_add_word(levtree* tree, const char *keyword, index_t id);
