@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "levnode.c"
+#include "levtree.h"
 
 #define min(x,y) ((x) < (y) ? (x) : (y))
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))

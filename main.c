@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include "levtree.c"
+#include "levtree.h"
 
 int main()
 {
     levtree tree;
-    const char* wordlist[] = {"ciao","cogliona","casa","cane", "scuola"};
+    char* wordlist[] = {"ciao","cogliona","casa","cane", "scuola"};
     levtree_init(&tree, wordlist,5);
     index_t i;
     levtree_result res;

@@ -38,10 +38,6 @@ void levtree_init(levtree* tree, char **words, index_t words_count);
 void levtree_free(levtree* tree);
 void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches);
 void levtree_add_word(levtree* tree, const char *keyword, index_t id);
-void print_result();
 levtree_result levtree_get_result(levtree* tree, index_t index);
-
-int main2();
-int main3();
 
 #endif // LEVTREE_H

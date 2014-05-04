@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "levtree.c"
+#include "levtree.h"
 #include <python2.7/Python.h>
 #include <python2.7/structmember.h>
 
@@ -11,13 +11,23 @@ typedef struct {
     /* Type-specific fields go here. */
 } levtree_levtree_obj;
 
+static int
+levtree_clear(levtree_levtree_obj *self)
+{
+    PyObject *tmp;
+
+    tmp = self->wordlist;
+    self->wordlist = NULL;
+    Py_XDECREF(tmp);
+    return 0;
+}
 
 static void
 levtree_dealloc(levtree_levtree_obj* self)
 {
+    levtree_clear(self);
     levtree_free(self->tree);
     free(self->tree);
-    Py_DECREF(self->wordlist);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -44,13 +54,13 @@ levtree_levtree_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
 
     /* the O! parses for a Python object (listObj) checked
        to be of type PyList_Type */
-    if (! PyArg_ParseTuple( args, "O!", &PyList_Type, &self->wordlist))
+    if (!PyArg_ParseTuple( args, "O!", &PyTuple_Type, &self->wordlist))
     {
         return -1;
     }
     Py_INCREF(self->wordlist);
     /* get the number of lines passed to us */
-    numLines = PyList_Size(self->wordlist);
+    numLines = PyTuple_Size(self->wordlist);
     carg = malloc(sizeof(char*)*numLines);
 
     /* should raise an error here. */
@@ -66,7 +76,7 @@ levtree_levtree_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
     {
 
         /* grab the string object from the next element of the list */
-        strObj = PyList_GetItem(self->wordlist, i); /* Can't fail */
+        strObj = PyTuple_GetItem(self->wordlist, i); /* Can't fail */
 
         /* make it a string */
         carg[i] = PyString_AsString( strObj );
@@ -109,7 +119,7 @@ levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds
     for(i=0; i<number_of_matches; i++)
     {
         res = levtree_get_result(self->tree,i);
-        string = PyList_GetItem(self->wordlist,res.id);
+        string = PyTuple_GetItem(self->wordlist,res.id);
         //printf("%p\t id: %u\n",string,res.id);
         tmp = Py_BuildValue("(OI)",string,res.distance);
         PyList_SetItem(list,i,tmp);
@@ -157,7 +167,7 @@ static PyTypeObject levtree_levtree_type =
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Levensthein distance tree",           /* tp_doc */
     0,		               /* tp_traverse */
-    0,		               /* tp_clear */
+    (inquiry)levtree_clear,		               /* tp_clear */
     0,		               /* tp_richcompare */
     0,		               /* tp_weaklistoffset */
     0,		               /* tp_iter */
@@ -182,7 +192,7 @@ PyMODINIT_FUNC
 initlevtree(void)
 {
     PyObject* m;
-    levtree_levtree_type.tp_new = PyType_GenericNew;
+    //levtree_levtree_type.tp_new = PyType_GenericNew;
     if (PyType_Ready(&levtree_levtree_type) < 0)
         return;
 
