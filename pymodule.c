@@ -26,7 +26,10 @@ static void
 levtree_dealloc(levtree_levtree_obj* self)
 {
     levtree_clear(self);
-    levtree_free(self->tree);
+    if(self->tree!=NULL)
+    {
+        levtree_free(self->tree);
+    }
     free(self->tree);
     self->ob_type->tp_free((PyObject*)self);
 }
@@ -44,7 +47,7 @@ levtree_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static int
-levtree_levtree_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
+levtree_python_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
 {
     int numLines;       /* how many lines we passed for parsing */
     char** carg;        /* argument to pass to the C function*/
@@ -54,7 +57,8 @@ levtree_levtree_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
 
     /* the O! parses for a Python object (listObj) checked
        to be of type PyList_Type */
-    if (!PyArg_ParseTuple( args, "O!", &PyTuple_Type, &self->wordlist))
+    int res;
+    if (!(res=PyArg_ParseTuple( args, "O!", &PyTuple_Type, &self->wordlist)))
     {
         return -1;
     }
@@ -180,7 +184,7 @@ static PyTypeObject levtree_levtree_type =
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    (initproc)levtree_levtree_init,      /* tp_init */
+    (initproc)levtree_python_init,      /* tp_init */
     0,                         /* tp_alloc */
     levtree_new,                 /* tp_new */
 };

@@ -2,7 +2,7 @@ from levtree import Levtree
 wordlist=[]
 for word in open('/usr/share/dict/cracklib-small','r'):
 	wordlist.append(word[:-1])
-tree=Levtree(tuple(wordlist))
+tree=Levtree(wordlist)
 res = tree.search('IDIOT',3,case_sensitive=False)
 print res
 """
