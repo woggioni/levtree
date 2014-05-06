@@ -98,7 +98,7 @@ levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds
     index_t number_of_matches=1;
     byte_t case_sensitive=0;
     index_t i;
-    PyObject* boolean;
+    PyObject* boolean=NULL;
     static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iO", kwlist,
                                       &wordkey, &number_of_matches,&boolean))
@@ -106,7 +106,7 @@ levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds
         return NULL;
     }
 
-    if(PyObject_IsTrue(boolean))
+    if(boolean && PyObject_IsTrue(boolean))
     {
         case_sensitive=1;
     }
