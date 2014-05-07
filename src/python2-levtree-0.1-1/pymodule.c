@@ -131,6 +131,45 @@ levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds
     return list;
 }
 
+static PyObject *
+levtree_levtree_search_id(levtree_levtree_obj* self, PyObject *args, PyObject *kwds)
+{
+    char* wordkey;
+    index_t number_of_matches=1;
+    byte_t case_sensitive=0;
+    index_t i;
+    PyObject* boolean=NULL;
+    static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iO", kwlist,
+                                      &wordkey, &number_of_matches,&boolean))
+    {
+        return NULL;
+    }
+
+    if(boolean && PyObject_IsTrue(boolean))
+    {
+        case_sensitive=1;
+    }
+    if(number_of_matches > self->tree->entry_count) // if some idiot enters a number of results bigger than the list of words given in the constructor
+    {
+        number_of_matches = self->tree->entry_count;
+    }
+    self->tree->case_sensitive=case_sensitive;
+    //printf("matches: %u", number_of_matches);
+    levtree_search(self->tree, wordkey, number_of_matches);
+    levtree_result res;
+    PyObject* tmp;
+    PyObject* list = PyList_New(number_of_matches);
+    for(i=0; i<number_of_matches; i++)
+    {
+        res = levtree_get_result(self->tree,i);
+        //printf("%p\t id: %u\n",string,res.id);
+        tmp = Py_BuildValue("(II)",res.id,res.distance);
+        PyList_SetItem(list,i,tmp);
+    }
+    return list;
+}
+
 static PyMemberDef Levtree_members[] =
 {
     //    {"standing", T_OBJECT_EX, offsetof(Levtree, ), 0,
@@ -142,6 +181,7 @@ static PyMemberDef Levtree_members[] =
 static PyMethodDef Levtree_methods[] =
 {
     {"search", levtree_levtree_search, METH_KEYWORDS, "Levenshtein tree search method"},
+    {"search_id", levtree_levtree_search_id, METH_KEYWORDS, "Levenshtein tree search method returning tuple index"},
     //{"result", levtree_get_result_py, METH_VARARGS, "Levenshtein tree get result method"},
     {NULL}  /* Sentinel */
 };
