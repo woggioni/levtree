@@ -1,10 +1,7 @@
-#ifndef LEVTREE_H
-#define LEVTREE_H
-
-#include <stdlib.h>
-#include "levnode.h"
-#include "levtree_standing.h"
-
+#ifndef WLEVTREE_H
+#define WLEVTREE_H
+#include "wlevnode.h"
+#include "levtree.h"
 
 typedef struct
 {
@@ -12,22 +9,22 @@ typedef struct
     byte_t allocated;
     byte_t torealloc;
     byte_t case_sensitive;
-    levnode* nodes;
+    wlevnode* nodes;
     index_t node_count;
     index_t node_size;
     index_t* entries; //vettore di interi che contiene la posizione di ogni parola nel vettore dei nodi
     index_t entry_count;
     index_t entry_size;
     levtree_standing* standing;
-}levtree;
+}wlevtree;
 
-void levtree_init(levtree* tree, char **words, index_t words_count);
-void levtree_free(levtree* tree);
-void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches);
-void levtree_add_word(levtree* tree, const char *keyword, index_t id);
-levtree_result levtree_get_result(levtree* tree, index_t index);
+void wlevtree_init(wlevtree* tree, wchar_t **words, index_t words_count);
+void wlevtree_free(wlevtree* tree);
+void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matches);
+void wlevtree_add_word(wlevtree* tree, const wchar_t *keyword, index_t id);
+levtree_result wlevtree_get_result(wlevtree* tree, index_t index);
 
-inline void levtree_alloc_rows(levtree* tree, index_t newsize)
+inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize)
 {
     index_t i;
     for(i=0; i<tree->node_count; i++)
@@ -36,7 +33,7 @@ inline void levtree_alloc_rows(levtree* tree, index_t newsize)
     }
 }
 
-inline void levtree_realloc_rows(levtree* tree, index_t newsize)
+inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize)
 {
     index_t i;
     for(i=0; i<tree->node_count; i++)
@@ -52,7 +49,7 @@ inline void levtree_realloc_rows(levtree* tree, index_t newsize)
     }
 }
 
-inline void levtree_delete_rows(levtree* tree)
+inline void wlevtree_delete_rows(wlevtree* tree)
 {
     index_t i;
     for(i=0; i<tree->node_count; i++)
@@ -65,5 +62,5 @@ inline void levtree_delete_rows(levtree* tree)
 }
 
 
+#endif // WLEVTREE_H
 
-#endif // LEVTREE_H

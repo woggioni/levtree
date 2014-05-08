@@ -1,14 +1,15 @@
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
-#include <ctype.h>
-#include "levtree.h"
+#include <wctype.h>
+#include "wlevtree.h"
 
 #define min(x,y) ((x) < (y) ? (x) : (y))
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
 #define min4(a,b,c,d) ((a)< (b) ? min3((a),(c),(d)) : min3((b),(c),(d)))
 
-levtree_result levtree_get_result(levtree* tree, index_t pos)
+levtree_result wlevtree_get_result(wlevtree* tree, index_t pos)
 {
     pos = tree->standing->count-pos-1;
     levtree_result* res = tree->standing->bottom.next;
@@ -24,22 +25,22 @@ levtree_result levtree_get_result(levtree* tree, index_t pos)
     return *res;
 }
 
-inline void levtree_add_node(levtree *tree, char key, index_t index, index_t parent, index_t prev)
+inline void wlevtree_add_node(wlevtree *tree, char key, index_t index, index_t parent, index_t prev)
 {
     tree->node_count++;
     if(tree->node_count >= tree->node_size)
     {
         tree->node_size *= 2;
-        tree->nodes = (levnode*) realloc(tree->nodes, tree->node_size*sizeof(levnode));
+        tree->nodes = (wlevnode*) realloc(tree->nodes, tree->node_size*sizeof(wlevnode));
     }
-    levnode* node = &tree->nodes[tree->node_count-1];
-    if(key)
+    wlevnode* node = &tree->nodes[tree->node_count-1];
+    if(key != L'\0')
     {
-        levnode_init(node,key,0);
+        wlevnode_init(node,key,0);
     }
     else
     {
-        levnode_init(node,key,index);
+        wlevnode_init(node,key,index);
     }
     node->parent = parent;
     node->prev = prev;
@@ -54,13 +55,13 @@ inline void levtree_add_node(levtree *tree, char key, index_t index, index_t par
 }
 
 
-void levtree_add_word(levtree* tree, const char* keyword, index_t id)
+void wlevtree_add_word(wlevtree* tree, const wchar_t* keyword, index_t id)
 {
     index_t size;
     index_t initial_nodes=tree->node_count;
     index_t ki=0;
     index_t tnode=0,cnode,nnode;
-    size=strlen(keyword)+1;
+    size = wcslen(keyword)+ sizeof(wchar_t)*1;
     if(size>tree->maxsize)
     {
         tree->maxsize=size;
@@ -76,7 +77,7 @@ void levtree_add_word(levtree* tree, const char* keyword, index_t id)
         cnode=tree->nodes[tnode].child;
         if(cnode)
         {
-            if(tree->case_sensitive ? (tree->nodes[cnode].key == keyword[ki]) : (tolower(tree->nodes[cnode].key) == tolower(keyword[ki])) )
+            if(tree->case_sensitive ? (tree->nodes[cnode].key == keyword[ki]) : (towlower(tree->nodes[cnode].key) == towlower(keyword[ki])) )
             {
                 tnode=cnode;
                 ki++;
@@ -87,7 +88,7 @@ void levtree_add_word(levtree* tree, const char* keyword, index_t id)
                 nnode = tree->nodes[cnode].next;
                 while(nnode)
                 {
-                    if(tree->case_sensitive ? (tree->nodes[nnode].key==keyword[ki]) : tolower(tree->nodes[nnode].key)==tolower(keyword[ki]) )
+                    if(tree->case_sensitive ? (tree->nodes[nnode].key==keyword[ki]) : towlower(tree->nodes[nnode].key)==towlower(keyword[ki]) )
                     {
                         tnode=nnode;
                         ki++;
@@ -99,7 +100,7 @@ void levtree_add_word(levtree* tree, const char* keyword, index_t id)
 
             }
         }
-        levtree_add_node(tree,keyword[ki],id,tnode,cnode);
+        wlevtree_add_node(tree,keyword[ki],id,tnode,cnode);
         ki++;
         tnode=tree->node_count-1;
     }
@@ -115,7 +116,7 @@ void levtree_add_word(levtree* tree, const char* keyword, index_t id)
     }
 }
 
-void levtree_init(levtree *tree, char **words, index_t words_count)
+void wlevtree_init(wlevtree *tree, wchar_t **words, index_t words_count)
 {
     tree->node_count = 0;
     tree->node_size = words_count*2;
@@ -128,19 +129,19 @@ void levtree_init(levtree *tree, char **words, index_t words_count)
     tree->entry_size = words_count;
     tree->entries = (index_t*) malloc(sizeof(index_t*)*words_count);
     tree->standing = (levtree_standing*) malloc(sizeof(levtree_standing));
-    levnode_init(tree->nodes,'\0',0);
+    wlevnode_init(tree->nodes,L'\0',0);
     tree->node_count++;
     index_t i;
     for(i=0; i<words_count; i++)
     {
-        levtree_add_word(tree, words[i], i);
+        wlevtree_add_word(tree, words[i], i);
     }
     //levtree_standing_init(tree->standing, standing_size);
 }
 
-void levtree_free(levtree *tree)
+void wlevtree_free(wlevtree *tree)
 {
-    levtree_delete_rows(tree);
+    wlevtree_delete_rows(tree);
     free(tree->entries);
     free(tree->nodes);
     if(tree->allocated)
@@ -151,25 +152,11 @@ void levtree_free(levtree *tree)
 }
 
 
-
-void lprint(levtree_standing* s)
+void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matches)
 {
-    printf("----------STANDING----------\n");
-    index_t i;
-    levtree_result *r = s->bottom.next;
-    for(i=0; i<s->count; i++)
-    {
-        printf("node: %d, distance: %d, next: %p\n",r->id, r->distance, (void*)r->next);
-        r = r->next;
-    }
-}
-
-void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
-{
-
     if(!tree->allocated)
     {
-        levtree_alloc_rows(tree,tree->maxsize);
+        wlevtree_alloc_rows(tree,tree->maxsize);
         tree->allocated=1;
     }
     else
@@ -178,17 +165,17 @@ void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
     }
     if(tree->torealloc)
     {
-        levtree_realloc_rows(tree,tree->maxsize);
+        wlevtree_realloc_rows(tree,tree->maxsize);
         tree->torealloc=0;
     }
     levtree_standing_init(tree->standing, n_of_matches);
     index_t i,j,k,pathindex;
     index_t size;
-    size=strlen(wordkey)+1;
+    size=wcslen(wordkey)+1*sizeof(wchar_t);
     index_t *path= (index_t*) malloc(sizeof(index_t)*(tree->maxsize+2));
     if(size>tree->maxsize)
     {
-        levtree_realloc_rows(tree,size);
+        wlevtree_realloc_rows(tree,size);
         tree->maxsize=size;
     }
     tree->nodes[0].processed=1;
@@ -234,7 +221,7 @@ void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
             crow[0]=prow[0]+1;
             for(k=1;k<size;k++)
             {
-                if(tree->case_sensitive ? tree->nodes[path[j]].key==wordkey[k-1] : tolower(tree->nodes[path[j]].key)==tolower(wordkey[k-1]))
+                if(tree->case_sensitive ? tree->nodes[path[j]].key==wordkey[k-1] : towlower(tree->nodes[path[j]].key)==towlower(wordkey[k-1]))
                 {
                     crow[k]=prow[k-1];
                 }
@@ -263,4 +250,5 @@ void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
     }
     free(path);
 }
+
 
