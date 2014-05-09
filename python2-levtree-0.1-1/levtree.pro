@@ -7,7 +7,8 @@ SOURCES += main.c \
     levnode.c \
     levtree.c \
     wlevnode.c \
-    wlevtree.c
+    wlevtree.c \
+    levtree_standing.c
 
 HEADERS += \
     levnode.h \

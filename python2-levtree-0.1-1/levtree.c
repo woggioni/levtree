@@ -8,6 +8,43 @@
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
 #define min4(a,b,c,d) ((a)< (b) ? min3((a),(c),(d)) : min3((b),(c),(d)))
 
+inline void levtree_alloc_rows(levtree* tree, index_t newsize)
+{
+    index_t i;
+    for(i=0; i<tree->node_count; i++)
+    {
+        tree->nodes[i].row = (index_t*) malloc(newsize*sizeof(index_t));
+    }
+}
+
+inline void levtree_realloc_rows(levtree* tree, index_t newsize)
+{
+    index_t i;
+    for(i=0; i<tree->node_count; i++)
+    {
+        if(tree->nodes[i].row)
+        {
+            tree->nodes[i].row = (index_t*) realloc(tree->nodes[i].row, newsize*sizeof(index_t));
+        }
+        else
+        {
+            tree->nodes[i].row = (index_t*) malloc(newsize*sizeof(index_t));
+        }
+    }
+}
+
+inline void levtree_delete_rows(levtree* tree)
+{
+    index_t i;
+    for(i=0; i<tree->node_count; i++)
+    {
+        if(tree->nodes[i].row)
+        {
+            free(tree->nodes[i].row);
+        }
+    }
+}
+
 levtree_result levtree_get_result(levtree* tree, index_t pos)
 {
     pos = tree->standing->count-pos-1;

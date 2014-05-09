@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 void levnode_init(levnode* node, char key, index_t index)
 {
     node->key = key;

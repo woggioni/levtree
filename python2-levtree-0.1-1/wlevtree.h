@@ -24,43 +24,5 @@ void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matche
 void wlevtree_add_word(wlevtree* tree, const wchar_t *keyword, index_t id);
 levtree_result wlevtree_get_result(wlevtree* tree, index_t index);
 
-inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize)
-{
-    index_t i;
-    for(i=0; i<tree->node_count; i++)
-    {
-        tree->nodes[i].row = (index_t*) malloc(newsize*sizeof(index_t));
-    }
-}
-
-inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize)
-{
-    index_t i;
-    for(i=0; i<tree->node_count; i++)
-    {
-        if(tree->nodes[i].row)
-        {
-            tree->nodes[i].row = (index_t*) realloc(tree->nodes[i].row, newsize*sizeof(index_t));
-        }
-        else
-        {
-            tree->nodes[i].row = (index_t*) malloc(newsize*sizeof(index_t));
-        }
-    }
-}
-
-inline void wlevtree_delete_rows(wlevtree* tree)
-{
-    index_t i;
-    for(i=0; i<tree->node_count; i++)
-    {
-        if(tree->nodes[i].row)
-        {
-            free(tree->nodes[i].row);
-        }
-    }
-}
-
-
 #endif // WLEVTREE_H
 

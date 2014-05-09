@@ -7,17 +7,17 @@ int main()
 {
     setlocale(LC_ALL,"");
     wlevtree tree;
-    wchar_t* wordlist[] = {L"ciao",L"coniglio",L"casa",L"cane",L"scuola"};
-    wlevtree_init(&tree, wordlist,5);
+    wchar_t* wordlist[] = {L"città",L"ciao",L"coniglio",L"casa",L"cane",L"scuola",L"Papà"};
+    wlevtree_init(&tree, wordlist,7);
     index_t i;
     levtree_result res;
-    wlevtree_search(&tree,L"cosa",2);
+    wlevtree_search(&tree,L"Pipa",2);
     for(i=0; i<tree.standing->count;i++)
     {
         res = wlevtree_get_result(&tree,i);
         printf("id: %u\tdistance: %u\n",res.id,res.distance);
     }
-    wlevtree_search(&tree,L"cibo",2);
+    wlevtree_search(&tree,L"Papa",2);
     for(i=0; i<tree.standing->count;i++)
     {
         res = wlevtree_get_result(&tree,i);

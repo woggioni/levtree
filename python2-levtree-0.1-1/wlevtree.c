@@ -9,6 +9,47 @@
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
 #define min4(a,b,c,d) ((a)< (b) ? min3((a),(c),(d)) : min3((b),(c),(d)))
 
+extern inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize);
+extern inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize);
+extern inline void wlevtree_delete_rows(wlevtree* tree);
+
+inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize)
+{
+    index_t i;
+    for(i=0; i<tree->node_count; i++)
+    {
+        tree->nodes[i].row = (index_t*) malloc(newsize*sizeof(index_t));
+    }
+}
+
+inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize)
+{
+    index_t i;
+    for(i=0; i<tree->node_count; i++)
+    {
+        if(tree->nodes[i].row)
+        {
+            tree->nodes[i].row = (index_t*) realloc(tree->nodes[i].row, newsize*sizeof(index_t));
+        }
+        else
+        {
+            tree->nodes[i].row = (index_t*) malloc(newsize*sizeof(index_t));
+        }
+    }
+}
+
+inline void wlevtree_delete_rows(wlevtree* tree)
+{
+    index_t i;
+    for(i=0; i<tree->node_count; i++)
+    {
+        if(tree->nodes[i].row)
+        {
+            free(tree->nodes[i].row);
+        }
+    }
+}
+
 levtree_result wlevtree_get_result(wlevtree* tree, index_t pos)
 {
     pos = tree->standing->count-pos-1;
@@ -25,7 +66,7 @@ levtree_result wlevtree_get_result(wlevtree* tree, index_t pos)
     return *res;
 }
 
-inline void wlevtree_add_node(wlevtree *tree, char key, index_t index, index_t parent, index_t prev)
+inline void wlevtree_add_node(wlevtree *tree, wchar_t key, index_t index, index_t parent, index_t prev)
 {
     tree->node_count++;
     if(tree->node_count >= tree->node_size)
@@ -34,7 +75,7 @@ inline void wlevtree_add_node(wlevtree *tree, char key, index_t index, index_t p
         tree->nodes = (wlevnode*) realloc(tree->nodes, tree->node_size*sizeof(wlevnode));
     }
     wlevnode* node = &tree->nodes[tree->node_count-1];
-    if(key != L'\0')
+    if(key != 0)
     {
         wlevnode_init(node,key,0);
     }
@@ -61,7 +102,7 @@ void wlevtree_add_word(wlevtree* tree, const wchar_t* keyword, index_t id)
     index_t initial_nodes=tree->node_count;
     index_t ki=0;
     index_t tnode=0,cnode,nnode;
-    size = wcslen(keyword)+ sizeof(wchar_t)*1;
+    size = wcslen(keyword)+ 1;
     if(size>tree->maxsize)
     {
         tree->maxsize=size;
@@ -171,7 +212,7 @@ void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matche
     levtree_standing_init(tree->standing, n_of_matches);
     index_t i,j,k,pathindex;
     index_t size;
-    size=wcslen(wordkey)+1*sizeof(wchar_t);
+    size=wcslen(wordkey)+1;
     index_t *path= (index_t*) malloc(sizeof(index_t)*(tree->maxsize+2));
     if(size>tree->maxsize)
     {
