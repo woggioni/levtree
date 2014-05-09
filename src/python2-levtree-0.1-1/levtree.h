@@ -1,23 +1,10 @@
 #ifndef LEVTREE_H
 #define LEVTREE_H
+
+#include <stdlib.h>
 #include "levnode.h"
+#include "levtree_standing.h"
 
-typedef struct levtree_result levtree_result;
-
-struct levtree_result
-{
-    index_t id;
-    index_t distance;
-    levtree_result* next;
-};
-
-typedef struct
-{
-    levtree_result* entries;
-    levtree_result bottom;
-    index_t size;
-    index_t count;
-}levtree_standing;
 
 typedef struct
 {

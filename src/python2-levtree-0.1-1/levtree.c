@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
@@ -8,36 +7,6 @@
 #define min(x,y) ((x) < (y) ? (x) : (y))
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
 #define min4(a,b,c,d) ((a)< (b) ? min3((a),(c),(d)) : min3((b),(c),(d)))
-
-levtree_result levtree_get_result(levtree* tree, index_t pos)
-{
-    pos = tree->standing->count-pos-1;
-    levtree_result* res = tree->standing->bottom.next;
-    index_t i;
-    for(i=0; i<tree->standing->count; i++)
-    {
-        if(i==pos)
-        {
-            break;
-        }
-        res=res->next;
-    }
-    return *res;
-}
-
-inline void levtree_standing_init(levtree_standing *s, index_t size)
-{
-    s->entries = (levtree_result*) malloc(sizeof(levtree_result)*size);
-    s->size = size;
-    s->bottom.next = s->entries;
-    s->bottom.distance = -1;
-    s->count = 0;
-}
-
-inline void levtree_standing_free(levtree_standing *s)
-{
-    free(s->entries);
-}
 
 inline void levtree_alloc_rows(levtree* tree, index_t newsize)
 {
@@ -76,79 +45,20 @@ inline void levtree_delete_rows(levtree* tree)
     }
 }
 
-inline void levtree_standing_insert(levtree_standing *s, index_t pos, levtree_result res)
+levtree_result levtree_get_result(levtree* tree, index_t pos)
 {
-    index_t i=0;
-    levtree_result *tres;
-    tres = &s->bottom;
-    levtree_result *tmp;
-    if(s->count < s->size)
-    {
-        tmp = &s->entries[s->count];
-    }
-    else
-    {
-        tmp = s->bottom.next;
-        s->bottom.next = tmp->next;
-        if(pos)
-            pos--;
-    }
-    *tmp = res;
-    while(tres)
+    pos = tree->standing->count-pos-1;
+    levtree_result* res = tree->standing->bottom.next;
+    index_t i;
+    for(i=0; i<tree->standing->count; i++)
     {
         if(i==pos)
         {
-            tmp->next = tres->next;
-            tres->next = tmp;
-            if(s->count<s->size)
-            {
-                s->count++;
-            }
             break;
         }
-        tres = tres->next;
-        i++;
+        res=res->next;
     }
-}
-
-inline void levtree_standing_add_result(levtree_standing* s, index_t id, index_t dist)
-{
-    levtree_result entry = {id,dist,NULL};
-    index_t i;
-    if(s->count == 0)
-    {
-        for(i=0; i<s->size; i++)
-        {
-            s->entries[i] = entry;
-            if(i<s->size-1)
-            {
-                s->entries[i].next = &s->entries[i+1];
-            }
-        }
-        s->count++;
-        return;
-    }
-    levtree_result *r = &s->bottom;
-    index_t insertion_point;
-    byte_t insert=0;
-    if(s->count < s->size)
-    {
-        insert=1;
-        insertion_point = 0;
-    }
-    for(i=0; i<=s->count; i++)
-    {
-        if(dist < r->distance)
-        {
-            insert=1;
-            insertion_point = i;
-        }
-        r = r->next;
-    }
-    if(insert)
-    {
-        levtree_standing_insert(s,insertion_point,entry);
-    }
+    return *res;
 }
 
 inline void levtree_add_node(levtree *tree, char key, index_t index, index_t parent, index_t prev)

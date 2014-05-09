@@ -20,6 +20,7 @@ typedef struct
     index_t count;
 }levtree_standing;
 
+
 inline void levtree_standing_init(levtree_standing *s, index_t size);
 
 inline void levtree_standing_free(levtree_standing *s);

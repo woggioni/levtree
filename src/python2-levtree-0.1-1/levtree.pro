@@ -5,11 +5,17 @@ CONFIG -= qt
 
 SOURCES += main.c \
     levnode.c \
-    levtree.c
+    levtree.c \
+    wlevnode.c \
+    wlevtree.c \
+    levtree_standing.c
 
 HEADERS += \
     levnode.h \
-    levtree.h
+    levtree.h \
+    wlevnode.h \
+    wlevtree.h \
+    levtree_standing.h
 
 OTHER_FILES += \
     pymodule.c\

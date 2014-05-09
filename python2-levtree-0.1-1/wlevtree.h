@@ -1,7 +1,8 @@
 #ifndef WLEVTREE_H
 #define WLEVTREE_H
+
 #include "wlevnode.h"
-#include "levtree.h"
+#include "levtree_standing.h"
 
 typedef struct
 {

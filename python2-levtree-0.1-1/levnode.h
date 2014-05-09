@@ -23,16 +23,4 @@ void levnode_init_copy(levnode* dest, levnode* src);
 void levnode_alloc(levnode* node, index_t size);
 void levnode_free(levnode* node);
 
-/*
-    LevenshteinDBNode();
-    LevenshteinDBNode(char key, index_t index);
-    LevenshteinDBNode(const LevenshteinDBNode &src);
-    ~LevenshteinDBNode();
-    index_t *row;
-    bool processed;
-    void realloc(index_t newsize);
-    void alloc(index_t size);
-    void clear();
-};
-*/
 #endif // LEVNODE_H
