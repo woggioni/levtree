@@ -8,7 +8,7 @@ SOURCES += main.c \
     levtree.c \
     wlevnode.c \
     wlevtree.c \
-    levtree_standing.c
+    levtree_standing.c \
 
 HEADERS += \
     levnode.h \
@@ -18,8 +18,9 @@ HEADERS += \
     levtree_standing.h
 
 OTHER_FILES += \
-    pymodule.c\
-    setup.py
+    setup.py\
+    pylevtree.c\
+    pywlevtree.c\
 
 
 

@@ -8,7 +8,7 @@ from distutils.core import setup, Extension
 
 module1 = Extension('levtree',
                     include_dirs = ['.'],
-                    sources = ['pymodule.c','levtree.c','levnode.c','levtree_standing.c','wlevtree.c','wlevnode.c'])
+                    sources = ['pylevtree.c','pywlevtree.c','levtree.c','levnode.c','levtree_standing.c','wlevtree.c','wlevnode.c'])
 
 setup (name = 'levtree',
        version = '1.0',
