@@ -401,7 +401,7 @@ void tree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
     free(path);
 }
 
-void tree_search_dl(levtree* tree, const char* wordkey, index_t n_of_matches)
+void tree_search_dl(levtree* tree, const char *wordkey, index_t n_of_matches)
 {
 
     if(!tree->allocated)
@@ -476,16 +476,17 @@ void tree_search_dl(levtree* tree, const char* wordkey, index_t n_of_matches)
                 {
                     crow[k]=prow[k-1];
                 }
-                else if(k>1 && j!=0 &&
-                        tree->nodes[path[j+1]].key == wordkey[k-1] &&
-                        tree->nodes[path[j]].key == wordkey[k-2]
-                        )
-                {
-                    crow[k]=min(crow[k], pprow[k-2]+1);
-                }
                 else
                 {
                     crow[k]=min3(crow[k-1]+1,prow[k]+1,prow[k-1]+1);
+                }
+                if(j<pathindex-2 && k>1 &&
+                        tree->nodes[path[j+1]].key == wordkey[k-1] &&
+                        tree->nodes[path[j]].key == wordkey[k-2] &&
+                        wordkey[k-2] != wordkey[k-1]
+                        )
+                {
+                    crow[k]=min(crow[k], pprow[k-2]+1);
                 }
             }
             tree->nodes[path[j]].processed=1;
@@ -509,7 +510,7 @@ void tree_search_dl(levtree* tree, const char* wordkey, index_t n_of_matches)
     free(path);
 }
 
-void tree_isearch_dl(levtree* tree, const char* wordkey, index_t n_of_matches)
+void tree_isearch_dl(levtree* tree, const char *wordkey, index_t n_of_matches)
 {
 
     if(!tree->allocated)
@@ -584,16 +585,17 @@ void tree_isearch_dl(levtree* tree, const char* wordkey, index_t n_of_matches)
                 {
                     crow[k]=prow[k-1];
                 }
-                else if(j!=0 && k>1 &&
-                        tolower(tree->nodes[path[j+1]].key) == tolower(wordkey[k-1]) &&
-                        tolower(tree->nodes[path[j]].key) == tolower(wordkey[k-2])
-                        )
-                {
-                    crow[k]=min(crow[k], pprow[k-2]+1);
-                }
                 else
                 {
                     crow[k]=min3(crow[k-1]+1,prow[k]+1,prow[k-1]+1);
+                }
+                if(j<pathindex-2 && k>1 &&
+                        tolower(tree->nodes[path[j+1]].key) == tolower(wordkey[k-1]) &&
+                        tolower(tree->nodes[path[j]].key) == tolower(wordkey[k-2]) &&
+                        tolower(wordkey[k-2]) != tolower(wordkey[k-1])
+                        )
+                {
+                    crow[k]=min(crow[k], pprow[k-2]+1);
                 }
             }
             tree->nodes[path[j]].processed=1;
@@ -616,4 +618,3 @@ void tree_isearch_dl(levtree* tree, const char* wordkey, index_t n_of_matches)
     }
     free(path);
 }
-

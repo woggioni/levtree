@@ -3,7 +3,7 @@
 #include "wlevtree.h"
 #include <locale.h>
 
-int main()
+int main2()
 {
     setlocale(LC_ALL,"");
     wlevtree tree;
@@ -28,7 +28,7 @@ int main()
     return 0;
 }
 
-int main2()
+int main()
 {
     levtree tree;
     char* wordlist[] = {"csoa","ciao","ocsa","coniglio","casa","cane", "scuola"};
