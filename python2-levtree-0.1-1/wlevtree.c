@@ -193,7 +193,7 @@ void wlevtree_free(wlevtree *tree)
 }
 
 
-void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matches)
+void wtree_isearch(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matches)
 {
     if(!tree->allocated)
     {
@@ -262,7 +262,7 @@ void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matche
             crow[0]=prow[0]+1;
             for(k=1;k<size;k++)
             {
-                if(tree->case_sensitive ? tree->nodes[path[j]].key==wordkey[k-1] : towlower(tree->nodes[path[j]].key)==towlower(wordkey[k-1]))
+                if(towlower(tree->nodes[path[j]].key)==towlower(wordkey[k-1]))
                 {
                     crow[k]=prow[k-1];
                 }
@@ -292,4 +292,112 @@ void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matche
     free(path);
 }
 
+void wtree_isearch_dl(wlevtree* tree, const wchar_t *wordkey, index_t n_of_matches)
+{
+
+    if(!tree->allocated)
+    {
+        wlevtree_alloc_rows(tree,tree->maxsize);
+        tree->allocated=1;
+    }
+    else
+    {
+        levtree_standing_free(tree->standing);
+    }
+    if(tree->torealloc)
+    {
+        wlevtree_realloc_rows(tree,tree->maxsize);
+        tree->torealloc=0;
+    }
+    levtree_standing_init(tree->standing, n_of_matches);
+    index_t i,j,k,pathindex;
+    index_t size;
+    size=wcslen(wordkey)+1;
+    index_t *path= (index_t*) malloc(sizeof(index_t)*(tree->maxsize+2));
+    if(size>tree->maxsize)
+    {
+        wlevtree_realloc_rows(tree,size);
+        tree->maxsize=size;
+    }
+    tree->nodes[0].processed=1;
+    for(i=0; i<size;i++)
+    {
+        tree->nodes[0].row[i]=i;
+    }
+
+    index_t *crow,*prow,*pprow;
+    index_t ptr=0,ref;
+
+    for(i=0;i<tree->entry_count;i++)
+    {
+        ref=tree->entries[i];
+        ptr=ref;
+        pathindex=0;
+        while(ptr)
+        {
+            path[pathindex++]=ptr;
+            ptr=tree->nodes[ptr].parent;
+        }
+        path[pathindex++]=0;
+
+        ptr=ref;
+        tree->nodes[ref].processed=1;
+        j=pathindex;
+#ifdef DEBUG
+        if(j>jmax)
+        {
+            jmax=j;
+            printf("jmax: %u\n",jmax);
+        }
+#endif
+
+        while(j-->0)
+        {
+            if(tree->nodes[path[j]].processed)
+            {
+                continue;
+            }
+            prow=tree->nodes[tree->nodes[path[j]].parent].row;
+            crow=tree->nodes[path[j]].row;
+            pprow=tree->nodes[tree->nodes[path[j+1]].parent].row;
+            crow[0]=prow[0]+1;
+            for(k=1;k<size;k++)
+            {
+                if(towlower(tree->nodes[path[j]].key)==towlower(wordkey[k-1]))
+                {
+                    crow[k]=prow[k-1];
+                }
+                else if(j<pathindex-3 && k>1 &&
+                        towlower(tree->nodes[path[j+1]].key) == towlower(wordkey[k-1]) &&
+                        towlower(tree->nodes[path[j]].key) == towlower(wordkey[k-2]) &&
+                        towlower(wordkey[k-2]) != towlower(wordkey[k-1])
+                        )
+                {
+                    crow[k]=min(crow[k], pprow[k-2]+1);
+                }
+                else
+                {
+                    crow[k]=min3(crow[k-1]+1,prow[k]+1,prow[k-1]+1);
+                }
+            }
+            tree->nodes[path[j]].processed=1;
+        }
+        levtree_standing_add_result(tree->standing,tree->nodes[ref].id,crow[size-1]);
+    }
+
+    for(i=0;i<tree->entry_count;i++)
+    {
+        ref=tree->entries[i];
+        ptr=ref;
+        while(tree->nodes[ptr].processed == 1)
+        {
+            tree->nodes[ptr].processed=0;
+            if(ptr!=0)
+                ptr=tree->nodes[ptr].parent;
+            else
+                break;
+        }
+    }
+    free(path);
+}
 

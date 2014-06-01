@@ -21,7 +21,8 @@ typedef struct
 
 void wlevtree_init(wlevtree* tree, wchar_t **words, index_t words_count);
 void wlevtree_free(wlevtree* tree);
-void wlevtree_search(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matches);
+void wtree_isearch(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matches);
+void wtree_isearch_dl(wlevtree* tree, const wchar_t* wordkey, index_t n_of_matches);
 void wlevtree_add_word(wlevtree* tree, const wchar_t *keyword, index_t id);
 levtree_result wlevtree_get_result(wlevtree* tree, index_t index);
 
