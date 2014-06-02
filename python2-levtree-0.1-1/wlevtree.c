@@ -118,7 +118,7 @@ void wlevtree_add_word(wlevtree* tree, const wchar_t* keyword, index_t id)
         cnode=tree->nodes[tnode].child;
         if(cnode)
         {
-            if(tree->case_sensitive ? (tree->nodes[cnode].key == keyword[ki]) : (towlower(tree->nodes[cnode].key) == towlower(keyword[ki])) )
+            if(tree->nodes[cnode].key == keyword[ki])
             {
                 tnode=cnode;
                 ki++;
@@ -129,7 +129,7 @@ void wlevtree_add_word(wlevtree* tree, const wchar_t* keyword, index_t id)
                 nnode = tree->nodes[cnode].next;
                 while(nnode)
                 {
-                    if(tree->case_sensitive ? (tree->nodes[nnode].key==keyword[ki]) : towlower(tree->nodes[nnode].key)==towlower(keyword[ki]) )
+                    if(tree->nodes[nnode].key==keyword[ki])
                     {
                         tnode=nnode;
                         ki++;
@@ -166,7 +166,7 @@ void wlevtree_init(wlevtree *tree, wchar_t **words, index_t words_count)
     tree->torealloc = 0;
     tree->entry_count = 0;
     tree->maxsize = 0;
-    tree->case_sensitive = 0;
+    tree->case_sensitive = 1;
     tree->entry_size = words_count;
     tree->entries = (index_t*) malloc(sizeof(index_t*)*words_count);
     tree->standing = (levtree_standing*) malloc(sizeof(levtree_standing));
@@ -521,9 +521,6 @@ void wtree_search_dl(wlevtree* tree, const wchar_t *wordkey, index_t n_of_matche
     }
     free(path);
 }
-
-
-
 
 void wtree_isearch_dl(wlevtree* tree, const wchar_t *wordkey, index_t n_of_matches)
 {

@@ -113,7 +113,7 @@ void levtree_add_word(levtree* tree, const char* keyword, index_t id)
         cnode=tree->nodes[tnode].child;
         if(cnode)
         {
-            if(tree->case_sensitive ? (tree->nodes[cnode].key == keyword[ki]) : (tolower(tree->nodes[cnode].key) == tolower(keyword[ki])) )
+            if(tree->nodes[cnode].key == keyword[ki])
             {
                 tnode=cnode;
                 ki++;
@@ -124,7 +124,7 @@ void levtree_add_word(levtree* tree, const char* keyword, index_t id)
                 nnode = tree->nodes[cnode].next;
                 while(nnode)
                 {
-                    if(tree->case_sensitive ? (tree->nodes[nnode].key==keyword[ki]) : tolower(tree->nodes[nnode].key)==tolower(keyword[ki]) )
+                    if(tree->nodes[nnode].key==keyword[ki])
                     {
                         tnode=nnode;
                         ki++;
@@ -161,7 +161,7 @@ void levtree_init(levtree *tree, char **words, index_t words_count)
     tree->torealloc = 0;
     tree->entry_count = 0;
     tree->maxsize = 0;
-    tree->case_sensitive = 0;
+    tree->case_sensitive = 1;
     tree->entry_size = words_count;
     tree->entries = (index_t*) malloc(sizeof(index_t*)*words_count);
     tree->standing = (levtree_standing*) malloc(sizeof(levtree_standing));
