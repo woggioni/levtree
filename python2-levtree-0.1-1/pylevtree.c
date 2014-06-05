@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "levtree.h"
-#include <python2.7/Python.h>
-#include <python2.7/structmember.h>
+#include <python3.4m/Python.h>
+#include <python3.4m/structmember.h>
 
 
 typedef struct {
@@ -32,6 +32,7 @@ levtree_dealloc(levtree_levtree_obj* self)
     }
     free(self->tree);
     self->ob_type->tp_free((PyObject*)self);
+    self->
 }
 
 static PyObject *
@@ -83,7 +84,7 @@ levtree_python_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
         strObj = PyTuple_GetItem(self->wordlist, i); /* Can't fail */
 
         /* make it a string */
-        carg[i] = PyString_AsString( strObj );
+        carg[i] = PyUnicode_AsString( strObj );
         if(PyErr_Occurred())
         {
             return -1;
@@ -225,9 +226,9 @@ static PyMethodDef Levtree_methods[] =
 
 static PyTypeObject levtree_levtree_type =
 {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     0,                         /*ob_size*/
-    "levtree.Levtree",             /*tp_name*/
+    MODULE_NAME ".Levtree",,             /*tp_name*/
     sizeof(levtree_levtree_obj), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor)levtree_dealloc,                         /*tp_dealloc*/
