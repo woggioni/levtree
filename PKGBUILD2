@@ -1,0 +1,15 @@
+# Contributor: oggio88 <oggioni.walter@gmail.com>
+pkgname=python2-levtree
+arch=('i686' 'x86_64' 'armv7h')
+pkgver=1.0
+pkgrel=1
+pkgdesc="Python 2.x module for fuzzy string search"
+license="GPL"
+depends=('python2')
+source=('levtree.tar.gz')
+md5sums=('20aa56ba3a3981504152973fdd9ab843')
+
+build() {
+cd $srcdir/levtree
+python2 setup.py install --optimize=1 --root=$pkgdir/
+}
