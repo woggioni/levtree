@@ -21,6 +21,7 @@ OTHER_FILES += \
     setup.py\
     pylevtree.c\
     pywlevtree.c\
+    python3.c\
 
 
 

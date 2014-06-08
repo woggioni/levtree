@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include "pylevtree.c"
 #include "wlevtree.h"
-//#include <python2.7/Python.h>
-//#include <python2.7/structmember.h>
+#include <python3.4m/Python.h>
+#include <python3.4m/structmember.h>
 
 
 typedef struct {
@@ -32,7 +31,7 @@ wlevtree_dealloc(wlevtree_wlevtree_obj* self)
         wlevtree_free(self->tree);
     }
     free(self->tree);
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static PyObject *
@@ -115,19 +114,13 @@ wlevtree_levtree_search(wlevtree_wlevtree_obj* self, PyObject *args, PyObject *k
 {
     wchar_t* wordkey;
     index_t number_of_matches=1;
-    byte_t case_sensitive=0;
     index_t i;
     PyObject* boolean=NULL, *dl=NULL;
     static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive","damerau_levehnshtein", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "u|iOO", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iOO", kwlist,
                                       &wordkey, &number_of_matches,&boolean, &dl))
     {
         return NULL;
-    }
-
-    if(boolean && PyObject_IsTrue(boolean))
-    {
-        case_sensitive=1;
     }
     if(number_of_matches > self->tree->entry_count) // if some idiot enters a number of results bigger than the list of words given in the constructor
     {
@@ -178,7 +171,7 @@ wlevtree_levtree_search_id(wlevtree_wlevtree_obj* self, PyObject *args, PyObject
     index_t i;
     PyObject* boolean=NULL,*dl=NULL;
     static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive","damerau_levehnshtein", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "u|iOO", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iOO", kwlist,
                                       &wordkey, &number_of_matches,&boolean,&dl))
     {
         return NULL;
@@ -237,72 +230,91 @@ static PyMemberDef Wlevtree_members[] =
 
 static PyMethodDef Wlevtree_methods[] =
 {
-    {"search", wlevtree_levtree_search, METH_KEYWORDS, "Levenshtein tree search method"},
-    {"search_id", wlevtree_levtree_search_id, METH_KEYWORDS, "Levenshtein tree search method returning tuple index"},
-    //{"result", levtree_get_result_py, METH_VARARGS, "Levenshtein tree get result method"},
+    {"search", wlevtree_levtree_search, METH_VARARGS | METH_KEYWORDS, PyDoc_STR("Levenshtein tree search method")},
+    {"search_id", wlevtree_levtree_search_id, METH_VARARGS | METH_KEYWORDS, PyDoc_STR("Levenshtein tree search method returning tuple index")},
+    //{"result", levtree_get_result_py, METH_VARARGS, PyDoc_STR("Levenshtein tree get result method")},
     {NULL}  /* Sentinel */
 };
 
-static PyTypeObject wlevtree_wlevtree_type =
-{
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
-    "levtree.wlevtree",             /*tp_name*/
-    sizeof(wlevtree_wlevtree_obj), /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)wlevtree_dealloc,                         /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT,        /*tp_flags*/
-    "Levensthein distance tree",           /* tp_doc */
-    0,		               /* tp_traverse */
-    (inquiry)wlevtree_clear,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
-    Wlevtree_methods,             /* tp_methods */
-    Wlevtree_members,             /* tp_members */
-    0,                         /* tp_getset */
-    0,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)wlevtree_python_init,      /* tp_init */
-    0,                         /* tp_alloc */
-    wlevtree_new,                 /* tp_new */
+
+static PyTypeObject wlevtree_wlevtree_type = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        "levtree.levtree",                          /* tp_name */
+        sizeof(wlevtree_wlevtree_obj),                        /* tp_basicsize */
+        0,                                              /* tp_itemsize */
+        (destructor)wlevtree_dealloc,            /* tp_dealloc */
+        0,                                              /* tp_print */
+        0,                                              /* tp_getattr */
+        0,                                              /* tp_setattr */
+        0,                                              /* tp_reserved */
+        0,                                              /* tp_repr */
+        0,                                              /* tp_as_number */
+        0,                                              /* tp_as_sequence */
+        0,                                              /* tp_as_mapping */
+        0,                                              /* tp_hash */
+        0,                                              /* tp_call */
+        0,                                              /* tp_str */
+        0,                                              /* tp_getattro */
+        0,                                              /* tp_setattro */
+        0,                                              /* tp_as_buffer */
+        Py_TPFLAGS_DEFAULT,                             /* tp_flags */
+        "Levensthein distance tree",                    /* tp_doc */
+        0,                                              /* tp_traverse */
+        (inquiry)wlevtree_clear,                         /* tp_clear */
+        0,                                              /* tp_richcompare */
+        0,                                              /* tp_weaklistoffset */
+        0,                                              /* tp_iter */
+        0,                                              /* tp_iternext */
+        Wlevtree_methods,                               /* tp_methods */
+        Wlevtree_members,                               /* tp_members */
+        0,                                              /* tp_getset */
+        0,                                              /* tp_base */
+        0,                                              /* tp_dict */
+        0,                                              /* tp_descr_get */
+        0,                                              /* tp_descr_set */
+        0,                                              /* tp_dictoffset */
+        (initproc)wlevtree_python_init,                 /* tp_init */
+        0,                                              /* tp_alloc */
+        wlevtree_new,                                              /* tp_new */
+        0                                               /* tp_free */
+};
+
+static struct PyModuleDef levtree_module = {
+        PyModuleDef_HEAD_INIT,
+        "levtree",
+        "Module for fast fuzzy-string searches",
+        -1,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL
 };
 
 #ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
 #define PyMODINIT_FUNC void
 #endif
+
+extern int wlevtree_setup_types(void)
+{
+    wlevtree_wlevtree_type.tp_new = PyType_GenericNew;
+    return PyType_Ready(&wlevtree_wlevtree_type);
+}
+
 PyMODINIT_FUNC
-initlevtree(void)
+PyInit_levtree(void)
 {
     PyObject* m;
-    //levtree_levtree_type.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&levtree_levtree_type) < 0 || PyType_Ready(&wlevtree_wlevtree_type)<0 )
-        return;
 
-    m = Py_InitModule3("levtree", NULL,
-                       "Example module that creates an extension type.");
 
-    Py_INCREF(&levtree_levtree_type);
-    PyModule_AddObject(m, "levtree", (PyObject *)&levtree_levtree_type);
+    m = PyModule_Create(&levtree_module);
+    if (m == NULL || wlevtree_setup_types()<0)
+            return NULL;
     Py_INCREF(&wlevtree_wlevtree_type);
-    PyModule_AddObject(m, "wlevtree", (PyObject *)&wlevtree_wlevtree_type);
+    if(PyModule_AddObject(m,"levtree",(PyObject *)&wlevtree_wlevtree_type))
+    {
+        return NULL;
+    }
+    return m;
 }
 

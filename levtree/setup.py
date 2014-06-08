@@ -12,7 +12,7 @@ if sys.version_info < (3, 0):
                                'levtree.c','wlevtree.c','wlevnode.c','levnode.c'])
 else:
     module1 = Extension('levtree',include_dirs = ['.'],
-                    sources = ['pywlevtree.c','levtree_standing.c','wlevtree.c','wlevnode.c'])
+                    sources = ['python3.c','levtree_standing.c','wlevtree.c','wlevnode.c'])
 setup(name = 'levtree',
        version = '1.0',
        description = 'Module computing Levenshtein distance for fuzzy string search',
