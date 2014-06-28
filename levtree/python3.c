@@ -2,6 +2,7 @@
 #include "wlevtree.h"
 #include <python3.4m/Python.h>
 #include <python3.4m/structmember.h>
+#include <locale.h>
 
 
 typedef struct {
@@ -117,7 +118,7 @@ wlevtree_levtree_search(wlevtree_wlevtree_obj* self, PyObject *args, PyObject *k
     index_t i;
     PyObject* boolean=NULL, *dl=NULL;
     static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive","damerau_levehnshtein", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iOO", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "u|iOO", kwlist,
                                       &wordkey, &number_of_matches,&boolean, &dl))
     {
         return NULL;
@@ -171,7 +172,7 @@ wlevtree_levtree_search_id(wlevtree_wlevtree_obj* self, PyObject *args, PyObject
     index_t i;
     PyObject* boolean=NULL,*dl=NULL;
     static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive","damerau_levehnshtein", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iOO", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "u|iOO", kwlist,
                                       &wordkey, &number_of_matches,&boolean,&dl))
     {
         return NULL;

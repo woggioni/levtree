@@ -13,11 +13,11 @@ res = tree.search_id('IDIOT',3)
 print(res)
 print([ wordlist[x[0]] for x in res ])
 
-wordlist=["citta","ciao","coniglio","casa","cane","scuola","Papa", 'stacippa', 'Cornacchia']
+wordlist=["citta","ciao","coniglio","casa","cane","scuola","Papà", 'stacippa', 'Cornacchia']
 tree=levtree(tuple(wordlist))
-res = tree.search(u'corncachia',3,damerau_levehnshtein=True, case_sensitive=False)
+res = tree.search('corncachia',3,damerau_levehnshtein=True, case_sensitive=False)
 print(res)
-res = tree.search_id(u'papa',3,damerau_levehnshtein=True, case_sensitive=True)
+res = tree.search_id('papà',3,damerau_levehnshtein=True, case_sensitive=True)
 print(res)
 print([ (wordlist[x[0]],x[1]) for x in res ])
 
