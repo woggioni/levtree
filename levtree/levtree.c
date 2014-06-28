@@ -93,6 +93,11 @@ inline void levtree_add_node(levtree *tree, char key, index_t index, index_t par
 
 void levtree_add_word(levtree* tree, const char* keyword, index_t id)
 {
+    if(tree->allocated)
+    {
+        levtree_delete_rows(tree);
+        tree->allocated = 0;
+    }
     index_t size;
     index_t initial_nodes=tree->node_count;
     index_t ki=0;

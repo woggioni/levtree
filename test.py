@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pdb
+import pdb,sys
 from levtree import levtree
 wordlist=[]
 for word in open('/usr/share/dict/cracklib-small','r'):
@@ -20,4 +20,6 @@ print(res)
 res = tree.search_id('papà',3,damerau_levehnshtein=True, case_sensitive=True)
 print(res)
 print([ (wordlist[x[0]],x[1]) for x in res ])
+tree.add('scimmia')
+print(tree.search('schimma',3))
 

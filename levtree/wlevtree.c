@@ -98,6 +98,11 @@ inline void wlevtree_add_node(wlevtree *tree, wchar_t key, index_t index, index_
 
 void wlevtree_add_word(wlevtree* tree, const wchar_t* keyword, index_t id)
 {
+    if(tree->allocated)
+    {
+        wlevtree_delete_rows(tree);
+        tree->allocated = 0;
+    }
     index_t size;
     index_t initial_nodes=tree->node_count;
     index_t ki=0;

@@ -24,6 +24,13 @@ int main()
         res = wlevtree_get_result(&tree,i);
         printf("id: %u\tdistance: %u\n",res.id,res.distance);
     }
+    wlevtree_add_word(&tree, L"scimmia", 9);
+    wtree_search_dl(&tree, L"schimma",4);
+    for(i=0; i<tree.standing->count;i++)
+    {
+        res = wlevtree_get_result(&tree,i);
+        printf("id: %u\tdistance: %u\n",res.id,res.distance);
+    }
     wlevtree_free(&tree);
     return 0;
 }
