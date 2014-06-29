@@ -254,7 +254,7 @@ static PyObject* wlevtree_levtree_add(wlevtree_wlevtree_obj* self, PyObject *arg
         cstring = PyUnicode_AsUnicode(wordkey);
         if(PyErr_Occurred())
         {
-            return -1;
+            return NULL;
         }
     }
     wlevtree_add_word(self->tree, cstring, id);

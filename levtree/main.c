@@ -3,7 +3,7 @@
 #include "wlevtree.h"
 #include <locale.h>
 
-int main()
+int main2()
 {
     setlocale(LC_ALL,"");
     wlevtree tree;
@@ -35,7 +35,7 @@ int main()
     return 0;
 }
 
-int main2()
+int main()
 {
     levtree tree;
     char* wordlist[] = {"csoa","ciao","ocsa","coniglio","casa","cane", "scuola"};
@@ -54,6 +54,21 @@ int main2()
         res = levtree_get_result(&tree,i);
         printf("id: %u\tdistance: %u\n",res.id,res.distance);
     }
+    levtree_add_word(&tree, "scimmia", 7);
+    tree_search_dl(&tree, "schimma",4);
+    for(i=0; i<tree.standing->count;i++)
+    {
+        res = levtree_get_result(&tree,i);
+        printf("id: %u\tdistance: %u\n",res.id,res.distance);
+    }
+
+    tree_search(&tree, "schimma",4);
+    for(i=0; i<tree.standing->count;i++)
+    {
+        res = levtree_get_result(&tree,i);
+        printf("id: %u\tdistance: %u\n",res.id,res.distance);
+    }
+
     levtree_free(&tree);
     return 0;
 }
