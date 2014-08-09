@@ -5,16 +5,18 @@ import levtree
 from levtree import Levtree
 
 def ptest():
-    searches = ["camel", "coriolis", "mattel", "cruzer", "copper"];
+    searches = ["camel", "coriolis", "mattel", "cruzer", "cpoper"];
     wordlist=[]
     for word in open('/usr/share/dict/cracklib-small','r'):
         wordlist.append(word[:-1])
     #wordlist.append(3)
     #pdb.set_trace()
-    tree=levtree.levtree(tuple(wordlist))
+    tree=Levtree(tuple(wordlist))
+    tree.setCaseSensitive(False)
+    tree.setAlgorithm(levtree.DAMERAU_LEVENSHTEIN)
     for i in range(10):
         for key in searches:
-            res = tree.search(key,4,damerau_levehnshtein=False, case_sensitive=False)
+            res = tree.search(key,5)
             print(res)
 
 """
@@ -78,5 +80,5 @@ def test():
     tree.add('scimmia')
     print(tree.search('schimma',3))
 
-wtest()
+ptest()
 
