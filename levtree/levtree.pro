@@ -15,7 +15,8 @@ HEADERS += \
     levtree.h \
     wlevnode.h \
     wlevtree.h \
-    levtree_standing.h
+    levtree_standing.h \
+    common.h
 
 OTHER_FILES += \
     setup.py\

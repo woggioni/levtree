@@ -15,11 +15,7 @@ typedef struct {
 static int
 wlevtree_clear(wlevtree_wlevtree_obj *self)
 {
-    PyObject *tmp;
-
-    tmp = self->wordlist;
-    self->wordlist = NULL;
-    Py_XDECREF(tmp);
+    Py_CLEAR(self->wordlist);
     return 0;
 }
 
@@ -32,6 +28,7 @@ wlevtree_dealloc(wlevtree_wlevtree_obj* self)
         wlevtree_free(self->tree);
     }
     free(self->tree);
+    self->tree = NULL;
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -55,17 +52,16 @@ wlevtree_python_init(wlevtree_wlevtree_obj *self, PyObject *args, PyObject *kwds
     unsigned i;
 
     PyObject * strObj;  /* one string in the list */
+    PyObject* intuple;
 
     /* the O! parses for a Python object (listObj) checked
        to be of type PyList_Type */
-    int res;
-    if (!(res=PyArg_ParseTuple( args, "O!", &PyTuple_Type, &self->wordlist)))
+    if (!(PyArg_ParseTuple(args, "O!", &PyTuple_Type, &intuple)))
     {
         return -1;
     }
-    Py_INCREF(self->wordlist);
     /* get the number of lines passed to us */
-    numLines = PyTuple_Size(self->wordlist);
+    numLines = PyTuple_Size(intuple);
     carg = malloc(sizeof(char*)*numLines);
 
     /* should raise an error here. */
@@ -74,6 +70,15 @@ wlevtree_python_init(wlevtree_wlevtree_obj *self, PyObject *args, PyObject *kwds
         return -1; /* Not a list */
     }
 
+    self->wordlist = PyList_New(numLines);
+    Py_IncRef(self->wordlist);
+    for(i=0; i<numLines; i++)
+    {
+        strObj = PyTuple_GetItem(intuple, i);
+        //PyList_Append(self->wordlist, string);
+        PyList_SetItem(self->wordlist, i, strObj);
+        Py_IncRef(strObj);
+    }
 
     /* iterate over items of the list, grabbing strings, and parsing
        for numbers */
@@ -81,7 +86,7 @@ wlevtree_python_init(wlevtree_wlevtree_obj *self, PyObject *args, PyObject *kwds
     {
 
         /* grab the string object from the next element of the list */
-        strObj = PyTuple_GetItem(self->wordlist, i); /* Can't fail */
+        strObj = PyList_GetItem(self->wordlist, i); /* Can't fail */
 
         /* make it a string */
 
@@ -161,7 +166,7 @@ wlevtree_levtree_search(wlevtree_wlevtree_obj* self, PyObject *args, PyObject *k
     for(i=0; i<number_of_matches; i++)
     {
         res = wlevtree_get_result(self->tree,i);
-        string = PyTuple_GetItem(self->wordlist,res.id);
+        string = PyList_GetItem(self->wordlist,res.id);
         //printf("%p\t id: %u\n",string,res.id);
         tmp = Py_BuildValue("(OI)",string,res.distance);
         PyList_SetItem(list,i,tmp);
@@ -227,6 +232,33 @@ wlevtree_levtree_search_id(wlevtree_wlevtree_obj* self, PyObject *args, PyObject
     return list;
 }
 
+static PyObject* wlevtree_levtree_add(wlevtree_wlevtree_obj* self, PyObject *args)
+{
+    wchar_t *cstring;
+    PyObject * wordkey;
+    if(!PyArg_ParseTuple(args, "O!", &PyUnicode_Type, &wordkey))
+    {
+        return NULL;
+    }
+    index_t id = PyList_Size(self->wordlist);
+    PyList_Append(self->wordlist, wordkey);
+    if(PyUnicode_Check(wordkey))
+    {
+        cstring = PyUnicode_AsUnicode(wordkey);
+        if(PyErr_Occurred())
+        {
+            return NULL;
+        }
+    }
+    wlevtree_add_word(self->tree, cstring, id);
+    return Py_None;
+}
+
+static PyObject* wlevtree_get_wordlist(wlevtree_wlevtree_obj* self)
+{
+    return PyList_AsTuple(self->wordlist);
+}
+
 static PyMemberDef Wlevtree_members[] =
 {
     //    {"standing", T_OBJECT_EX, offsetof(Levtree, ), 0,
@@ -239,6 +271,8 @@ static PyMethodDef Wlevtree_methods[] =
 {
     {"search", wlevtree_levtree_search, METH_KEYWORDS, "Levenshtein tree search method"},
     {"search_id", wlevtree_levtree_search_id, METH_KEYWORDS, "Levenshtein tree search method returning tuple index"},
+    {"add", wlevtree_levtree_add, METH_VARARGS, PyDoc_STR("Levenshtein tree search method returning tuple index")},
+    {"wordlist", wlevtree_get_wordlist, METH_NOARGS, PyDoc_STR("Returns a tuple containing all the words contained into the underlying tree in order of insertion (and thus index)")},
     //{"result", levtree_get_result_py, METH_VARARGS, "Levenshtein tree get result method"},
     {NULL}  /* Sentinel */
 };

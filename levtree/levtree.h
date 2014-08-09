@@ -2,16 +2,17 @@
 #define LEVTREE_H
 
 #include <stdlib.h>
+#include "common.h"
 #include "levnode.h"
 #include "levtree_standing.h"
 
+typedef struct levtree levtree;
 
-typedef struct
+struct levtree
 {
     index_t maxsize;
     byte_t allocated;
     byte_t torealloc;
-    byte_t case_sensitive;
     levnode* nodes;
     index_t node_count;
     index_t node_size;
@@ -19,7 +20,9 @@ typedef struct
     index_t entry_count;
     index_t entry_size;
     levtree_standing* standing;
-}levtree;
+    byte_t (*checker)(char key1, char key2);
+    void (*distance_calculator)(levtree* tree, const char* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j);
+};
 
 void levtree_init(levtree* tree, char **words, index_t words_count);
 void levtree_free(levtree* tree);
@@ -27,7 +30,10 @@ void tree_search(levtree* tree, const char* wordkey, index_t n_of_matches);
 void tree_isearch(levtree* tree, const char* wordkey, index_t n_of_matches);
 void tree_search_dl(levtree* tree, const char* wordkey, index_t n_of_matches);
 void tree_isearch_dl(levtree* tree, const char* wordkey, index_t n_of_matches);
-void levtree_add_word(levtree* tree, const char *keyword, index_t id);
+void levtree_add_word(levtree* tree, const char* keyword, index_t id);
+void levtree_set_algorithm(levtree *tree, levtree_algorithm algo);
+void levtree_set_case_sensitive(levtree *tree, byte_t boolean);
+
 levtree_result levtree_get_result(levtree* tree, index_t index);
 
 #endif // LEVTREE_H

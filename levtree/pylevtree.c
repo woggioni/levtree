@@ -14,11 +14,7 @@ typedef struct {
 static int
 levtree_clear(levtree_levtree_obj *self)
 {
-    PyObject *tmp;
-
-    tmp = self->wordlist;
-    self->wordlist = NULL;
-    Py_XDECREF(tmp);
+    Py_CLEAR(self->wordlist);
     return 0;
 }
 
@@ -31,6 +27,7 @@ levtree_dealloc(levtree_levtree_obj* self)
         levtree_free(self->tree);
     }
     free(self->tree);
+    self->tree = NULL;
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -54,23 +51,32 @@ levtree_python_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
     unsigned i;
 
     PyObject * strObj;  /* one string in the list */
+    PyObject* intuple;
 
     /* the O! parses for a Python object (listObj) checked
        to be of type PyList_Type */
-    int res;
-    if (!(res=PyArg_ParseTuple( args, "O!", &PyTuple_Type, &self->wordlist)))
+    if (!(PyArg_ParseTuple(args, "O!", &PyTuple_Type, &intuple)))
     {
         return -1;
     }
-    Py_INCREF(self->wordlist);
     /* get the number of lines passed to us */
-    numLines = PyTuple_Size(self->wordlist);
+    numLines = PyTuple_Size(intuple);
     carg = malloc(sizeof(char*)*numLines);
 
     /* should raise an error here. */
     if (numLines < 0)
     {
         return -1; /* Not a list */
+    }
+
+    self->wordlist = PyList_New(numLines);
+    Py_IncRef(self->wordlist);
+    for(i=0; i<numLines; i++)
+    {
+        strObj = PyTuple_GetItem(intuple, i);
+        //PyList_Append(self->wordlist, string);
+        PyList_SetItem(self->wordlist, i, strObj);
+        Py_IncRef(strObj);
     }
 
 
@@ -80,7 +86,7 @@ levtree_python_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
     {
 
         /* grab the string object from the next element of the list */
-        strObj = PyTuple_GetItem(self->wordlist, i); /* Can't fail */
+        strObj = PyList_GetItem(self->wordlist, i); /* Can't fail */
 
         /* make it a string */
         carg[i] = PyString_AsString( strObj );
@@ -141,7 +147,7 @@ levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds
     for(i=0; i<number_of_matches; i++)
     {
         res = levtree_get_result(self->tree,i);
-        string = PyTuple_GetItem(self->wordlist,res.id);
+        string = PyList_GetItem(self->wordlist,res.id);
         //printf("%p\t id: %u\n",string,res.id);
         tmp = Py_BuildValue("(OI)",string,res.distance);
         PyList_SetItem(list,i,tmp);
@@ -207,6 +213,30 @@ levtree_levtree_search_id(levtree_levtree_obj* self, PyObject *args, PyObject *k
     return list;
 }
 
+static PyObject* levtree_levtree_add(levtree_levtree_obj* self, PyObject *args)
+{
+    wchar_t *cstring;
+    PyObject * wordkey;
+    if(!PyArg_ParseTuple(args, "O!", &PyString_Type, &wordkey))
+    {
+        return NULL;
+    }
+    cstring = PyString_AsString(wordkey);
+    if(PyErr_Occurred())
+    {
+        return NULL;
+    }
+    index_t id = PyList_Size(self->wordlist);
+    PyList_Append(self->wordlist, wordkey);
+    levtree_add_word(self->tree, cstring, id);
+    return Py_None;
+}
+
+static PyObject* levtree_get_wordlist(levtree_levtree_obj* self)
+{
+    return PyList_AsTuple(self->wordlist);
+}
+
 static PyMemberDef Levtree_members[] =
 {
     //    {"standing", T_OBJECT_EX, offsetof(Levtree, ), 0,
@@ -219,6 +249,8 @@ static PyMethodDef Levtree_methods[] =
 {
     {"search", levtree_levtree_search, METH_KEYWORDS, "Levenshtein tree search method"},
     {"search_id", levtree_levtree_search_id, METH_KEYWORDS, "Levenshtein tree search method returning tuple index"},
+    {"add", levtree_levtree_add, METH_VARARGS, PyDoc_STR("Add a string to the underlying tree structured dictionary")},
+    {"wordlist", levtree_get_wordlist, METH_NOARGS, PyDoc_STR("Returns a tuple containing all the words contained into the underlying tree in order of insertion (and thus index)")},
     //{"result", levtree_get_result_py, METH_VARARGS, "Levenshtein tree get result method"},
     {NULL}  /* Sentinel */
 };
