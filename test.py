@@ -2,7 +2,7 @@
 
 import pdb,sys
 import levtree
-from levtree import Levtree
+from levtree import Levtree,Wlevtree
 
 def ptest():
     searches = ["camel", "coriolis", "mattel", "cruzer", "cpoper"];
@@ -62,23 +62,26 @@ def test():
     for word in open('/usr/share/dict/cracklib-small','r'):
         wordlist.append(word[:-1])
     #wordlist.append(3)
-    tree=levtree(tuple(wordlist))
+    tree=Levtree(tuple(wordlist))
     res = tree.search('IDIOT',3,damerau_levehnshtein=True, case_sensitive=True)
     print(res)
-    res = tree.search_id('IDIOT',3)
+    res = tree.searchID('IDIOT',3)
     print(res)
     print([ wordlist[x[0]] for x in res ])
 
-    wordlist=["citta","ciao","coniglio","casa","cane","scuola","Papa",'stacippa','Cornacchia']
-    tree=levtree(tuple(wordlist))
-    res = tree.search('corncachia',3,damerau_levehnshtein=True, case_sensitive=False)
+    wordlist=[u"citta",u"ciao",u"coniglio",u"casa",u"cane",u"scuola",u"papà",u'stacippa',u'Cornacchia']
+    tree=Wlevtree(tuple(wordlist))
+    res = tree.search(u'corncachia',3,damerau_levehnshtein=True, case_sensitive=False)
     print(res)
-    res = tree.search_id('papa',3,damerau_levehnshtein=True, case_sensitive=True)
+    tree.setAlgorithm(levtree.DAMERAU_LEVENSHTEIN)
+    tree.setCaseSensitive(False)
+    res = tree.searchID(u'papa',3)
     print(res)
     print([ (wordlist[x[0]],x[1]) for x in res ])
     pdb.set_trace()
-    tree.add('scimmia')
-    print(tree.search('schimma',3))
+    tree.add(u'scimmia')
+    print(tree.search(u'schimma',3))
+    print(tree.search(u'scimmai',3))
 
-ptest()
+test()
 

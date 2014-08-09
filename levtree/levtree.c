@@ -217,7 +217,7 @@ void lprint(levtree_standing* s)
     }
 }
 
-void tree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
+void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
 {
 
     if(!tree->allocated)

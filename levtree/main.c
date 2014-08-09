@@ -43,28 +43,28 @@ int main()
     levtree_init(&tree, wordlist,7);
     index_t i;
     levtree_result res;
-    tree_search(&tree,"cosa",4);
+    levtree_search(&tree,"cosa",4);
     for(i=0; i<tree.standing->count;i++)
     {
         res = levtree_get_result(&tree,i);
         printf("id: %u\tdistance: %u\n",res.id,res.distance);
     }
     levtree_set_algorithm(&tree, DAMERAU_LEVENSHTEIN);
-    tree_search(&tree,"cosa",4);
+    levtree_search(&tree,"cosa",4);
     for(i=0; i<tree.standing->count;i++)
     {
         res = levtree_get_result(&tree,i);
         printf("id: %u\tdistance: %u\n",res.id,res.distance);
     }
     levtree_add_word(&tree, "scimmia", 7);
-    tree_search(&tree, "schimma",4);
+    levtree_search(&tree, "schimma",4);
     for(i=0; i<tree.standing->count;i++)
     {
         res = levtree_get_result(&tree,i);
         printf("id: %u\tdistance: %u\n",res.id,res.distance);
     }
 
-    tree_search(&tree, "schimma",4);
+    levtree_search(&tree, "schimma",4);
     for(i=0; i<tree.standing->count;i++)
     {
         res = levtree_get_result(&tree,i);

@@ -230,7 +230,8 @@ static PyObject *
 wlevtree_levtree_search_id(wlevtree_wlevtree_obj* self, PyObject *args, PyObject *kwds)
 {
     index_t number_of_matches = pylevtree_search_template(self, args, kwds);
-    levtree_result res;
+    levtree_result res;static PyObject* PYLEVENSHTEIN;
+    static PyObject* PYDAMERAU_LEVENSHTEIN;
     PyObject* tmp;
     PyObject* list = PyList_New(number_of_matches);
     index_t i;

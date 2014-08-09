@@ -7,7 +7,7 @@ pkgdesc="Python 2.x module for fuzzy string search"
 license="GPL"
 depends=('python2')
 source=('levtree.tar.gz')
-md5sums=('6b73e1a98a75b041322670c210e21262')
+md5sums=('0dd2e48e2c5e49db58e420bffaaa473e')
 
 build() {
 cd $srcdir/levtree

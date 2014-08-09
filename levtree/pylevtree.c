@@ -101,13 +101,46 @@ levtree_python_init(levtree_levtree_obj *self, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static PyObject *
-levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds)
+static PyObject* pylevtree_set_case_sensitive(levtree_levtree_obj* self, PyObject *args)
+{
+    PyObject* boolean;
+    if (!PyArg_ParseTuple(args, "O", &boolean))
+        return NULL;
+
+    if(PyObject_IsTrue(boolean))
+    {
+        levtree_set_case_sensitive(self->tree,1);
+    }
+    else
+    {
+        levtree_set_case_sensitive(self->tree,0);
+    }
+    return Py_None;
+}
+
+static PyObject* pylevtree_set_algorithm(levtree_levtree_obj* self, PyObject *args)
+{
+    int algo;
+    if (!PyArg_ParseTuple(args, "i", &algo))
+    {
+        return NULL;
+    }
+    switch(algo)
+    {
+    case LEVENSHTEIN:
+        levtree_set_algorithm(self->tree,LEVENSHTEIN);
+        break;
+    case DAMERAU_LEVENSHTEIN:
+        levtree_set_algorithm(self->tree, DAMERAU_LEVENSHTEIN);
+        break;
+    }
+    return Py_None;
+}
+
+static index_t pylevtree_search_template(levtree_levtree_obj* self, PyObject *args, PyObject *kwds)
 {
     char* wordkey;
     index_t number_of_matches=1;
-    byte_t case_sensitive=0;
-    index_t i;
     PyObject* boolean=NULL, *dl=NULL;
     static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive","damerau_levehnshtein", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iOO", kwlist,
@@ -119,31 +152,40 @@ levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds
     {
         number_of_matches = self->tree->entry_count;
     }
-    if(boolean && PyObject_IsTrue(boolean))
+    if(dl)
     {
-        if(dl && PyObject_IsTrue(dl))
+        if(PyObject_IsTrue(dl))
         {
-            tree_search_dl(self->tree, wordkey, number_of_matches);
+            levtree_set_algorithm(self->tree, DAMERAU_LEVENSHTEIN);
         }
         else
         {
-            tree_search(self->tree, wordkey, number_of_matches);
+             levtree_set_algorithm(self->tree, LEVENSHTEIN);
         }
     }
-    else
+    if(boolean)
     {
-        if(dl && PyObject_IsTrue(dl))
+        if(PyObject_IsTrue(boolean))
         {
-            tree_isearch_dl(self->tree, wordkey, number_of_matches);
+            levtree_set_case_sensitive(self->tree,1);
         }
         else
         {
-            tree_isearch(self->tree, wordkey, number_of_matches);
+            levtree_set_case_sensitive(self->tree,0);
         }
     }
+    levtree_search(self->tree, wordkey, number_of_matches);
+    return number_of_matches;
+}
+
+static PyObject *
+levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds)
+{
+    index_t number_of_matches = pylevtree_search_template(self, args, kwds);
     levtree_result res;
     PyObject* tmp, *string;
     PyObject* list = PyList_New(number_of_matches);
+    index_t i;
     for(i=0; i<number_of_matches; i++)
     {
         res = levtree_get_result(self->tree,i);
@@ -158,51 +200,11 @@ levtree_levtree_search(levtree_levtree_obj* self, PyObject *args, PyObject *kwds
 static PyObject *
 levtree_levtree_search_id(levtree_levtree_obj* self, PyObject *args, PyObject *kwds)
 {
-    char* wordkey;
-    index_t number_of_matches=1;
-    byte_t case_sensitive=0;
-    index_t i;
-    PyObject* boolean=NULL, *dl=NULL;
-    static char *kwlist[] = {"wordkey","number_of_matches","case_sensitive","damerau_levehnshtein", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iOO", kwlist,
-                                      &wordkey, &number_of_matches,&boolean,&dl))
-    {
-        return NULL;
-    }
-
-    if(boolean && PyObject_IsTrue(boolean))
-    {
-        case_sensitive=1;
-    }
-    if(number_of_matches > self->tree->entry_count) // if some idiot enters a number of results bigger than the list of words given in the constructor
-    {
-        number_of_matches = self->tree->entry_count;
-    }
-    if(boolean && PyObject_IsTrue(boolean))
-    {
-        if(dl && PyObject_IsTrue(dl))
-        {
-            tree_search_dl(self->tree, wordkey, number_of_matches);
-        }
-        else
-        {
-            tree_search(self->tree, wordkey, number_of_matches);
-        }
-    }
-    else
-    {
-        if(dl && PyObject_IsTrue(dl))
-        {
-            tree_isearch_dl(self->tree, wordkey, number_of_matches);
-        }
-        else
-        {
-            tree_isearch(self->tree, wordkey, number_of_matches);
-        }
-    }
+    index_t number_of_matches = pylevtree_search_template(self, args, kwds);
     levtree_result res;
     PyObject* tmp;
     PyObject* list = PyList_New(number_of_matches);
+    index_t i;
     for(i=0; i<number_of_matches; i++)
     {
         res = levtree_get_result(self->tree,i);
@@ -247,8 +249,11 @@ static PyMemberDef Levtree_members[] =
 
 static PyMethodDef Levtree_methods[] =
 {
+    {"setCaseSensitive", pylevtree_set_case_sensitive, METH_VARARGS, PyDoc_STR("Set case sensityvity of the search method of the tree instance")},
+    {"setAlgorithm", pylevtree_set_algorithm, METH_VARARGS, PyDoc_STR("Set the algorithm for string distance calculation.\n\
+     You can choose between Levtree.LEVENSHTEIN and Levtree.DAMERAU_LEVENSHTEIN")},
     {"search", levtree_levtree_search, METH_KEYWORDS, "Levenshtein tree search method"},
-    {"search_id", levtree_levtree_search_id, METH_KEYWORDS, "Levenshtein tree search method returning tuple index"},
+    {"searchID", levtree_levtree_search_id, METH_KEYWORDS, "Levenshtein tree search method returning tuple index"},
     {"add", levtree_levtree_add, METH_VARARGS, PyDoc_STR("Add a string to the underlying tree structured dictionary")},
     {"wordlist", levtree_get_wordlist, METH_NOARGS, PyDoc_STR("Returns a tuple containing all the words contained into the underlying tree in order of insertion (and thus index)")},
     //{"result", levtree_get_result_py, METH_VARARGS, "Levenshtein tree get result method"},
