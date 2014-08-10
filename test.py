@@ -2,7 +2,7 @@
 
 import pdb,sys
 import levtree
-from levtree import Levtree,Wlevtree
+from levtree import Levtree  #,Wlevtree
 
 def ptest():
     searches = ["camel", "coriolis", "mattel", "cruzer", "cpoper"];
@@ -83,5 +83,5 @@ def test():
     print(tree.search(u'schimma',3))
     print(tree.search(u'scimmai',3))
 
-test()
+ptest()
 
