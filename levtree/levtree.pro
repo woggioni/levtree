@@ -1,14 +1,13 @@
-TEMPLATE = app
+TEMPLATE = lib
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+TARGET = levtree
 
-SOURCES += main.c \
-    levnode.c \
+SOURCES += levnode.c \
     levtree.c \
     wlevnode.c \
     wlevtree.c \
-    levtree_standing.c \
+    levtree_standing.c
 
 HEADERS += \
     levnode.h \
@@ -24,5 +23,12 @@ OTHER_FILES += \
     pywlevtree.c\
     python3.c\
 
+DEFINES += LEVTREE_LIBRARY
 
+unix {
+    header.path = /usr/local/include/levtree
+    target.path = /usr/local/lib
+    header.files = levnode.h levtree.h wlevnode.h wlevtree.h levtree_standing.h common.h
+    INSTALLS += target header
+}
 

@@ -1,0 +1,23 @@
+# Contributor: oggio88 <oggioni.walter@gmail.com>
+pkgname=levtree
+arch=('x86_64')
+pkgver=0.1
+pkgrel=1
+pkgdesc="A small C library for fast fuzzy string search"
+license="GPL"
+depends=('')
+source=('levtree.tar.gz')
+md5sums=('2237d0d72105d5be9eae8ba82f4cdacb')
+
+build() {
+cd $srcdir/levtree
+qmake levtree.pro
+make
+}
+
+package()
+{
+
+	cd $srcdir/levtree
+	make install INSTALL_ROOT="$pkgdir"
+}
