@@ -8,12 +8,12 @@
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
 #define min4(a,b,c,d) ((a)< (b) ? min3((a),(c),(d)) : min3((b),(c),(d)))
 
-byte_t case_insensitive_checker(char k1, char k2)
+static inline byte_t case_insensitive_checker(char k1, char k2)
 {
     return tolower(k1)==tolower(k2);
 }
 
-byte_t case_sensitive_checker(char k1, char k2)
+static inline byte_t case_sensitive_checker(char k1, char k2)
 {
     return k1==k2;
 }
@@ -71,7 +71,7 @@ levtree_result levtree_get_result(levtree* tree, index_t pos)
     return *res;
 }
 
-inline void levtree_add_node(levtree *tree, char key, index_t index, index_t parent, index_t prev)
+static inline void levtree_add_node(levtree *tree, char key, index_t index, index_t parent, index_t prev)
 {
     tree->node_count++;
     if(tree->node_count >= tree->node_size)
