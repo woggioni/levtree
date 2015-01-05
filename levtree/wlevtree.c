@@ -329,11 +329,7 @@ void wlevtree_set_case_sensitive(wlevtree *tree, byte_t boolean)
     }
 }
 
-<<<<<<< HEAD
-void w_levenshtein_distance(wlevtree* __restrict__ tree, const wchar_t* __restrict__ wordkey, index_t wordlen, index_t* __restrict__ path, index_t pathLength, index_t j)
-=======
 static void w_levenshtein_distance(wlevtree* tree, const wchar_t* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j)
->>>>>>> 092429edad8871d9ae6bb70e26c269d29e145888
 {
     index_t* __restrict__ prow = tree->nodes[tree->nodes[path[j]].parent].row;
     index_t* __restrict__ crow = tree->nodes[path[j]].row;
@@ -351,11 +347,7 @@ static void w_levenshtein_distance(wlevtree* tree, const wchar_t* wordkey, index
     }
 }
 
-<<<<<<< HEAD
-void w_damerau_levenshtein_distance(wlevtree* __restrict__ tree, const wchar_t* __restrict__ wordkey, index_t wordlen, index_t* __restrict__ path, index_t pathLength, index_t j)
-=======
 static void w_damerau_levenshtein_distance(wlevtree* tree, const wchar_t* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j)
->>>>>>> 092429edad8871d9ae6bb70e26c269d29e145888
 {
     index_t* __restrict__ prow = tree->nodes[tree->nodes[path[j]].parent].row;
     index_t* __restrict__ crow = tree->nodes[path[j]].row;
