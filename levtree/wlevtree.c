@@ -14,17 +14,17 @@ extern inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize);
 extern inline void wlevtree_delete_rows(wlevtree* tree);
 
 
-byte_t w_case_insensitive_checker(wchar_t k1, wchar_t k2)
+byte_t static w_case_insensitive_checker(wchar_t k1, wchar_t k2)
 {
     return towlower(k1)==towlower(k2);
 }
 
-byte_t w_case_sensitive_checker(wchar_t k1, wchar_t k2)
+byte_t static w_case_sensitive_checker(wchar_t k1, wchar_t k2)
 {
     return k1==k2;
 }
 
-inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize)
+static inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize)
 {
     index_t i;
     for(i=0; i<tree->node_count; i++)
@@ -33,7 +33,7 @@ inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize)
     }
 }
 
-inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize)
+static inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize)
 {
     index_t i;
     for(i=0; i<tree->node_count; i++)
@@ -49,7 +49,7 @@ inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize)
     }
 }
 
-inline void wlevtree_delete_rows(wlevtree* tree)
+static inline void wlevtree_delete_rows(wlevtree* tree)
 {
     index_t i;
     for(i=0; i<tree->node_count; i++)
@@ -77,7 +77,7 @@ levtree_result wlevtree_get_result(wlevtree* tree, index_t pos)
     return *res;
 }
 
-inline void wlevtree_add_node(wlevtree *tree, wchar_t key, index_t index, index_t parent, index_t prev)
+inline static void wlevtree_add_node(wlevtree *tree, wchar_t key, index_t index, index_t parent, index_t prev)
 {
     tree->node_count++;
     if(tree->node_count >= tree->node_size)
@@ -329,7 +329,11 @@ void wlevtree_set_case_sensitive(wlevtree *tree, byte_t boolean)
     }
 }
 
+<<<<<<< HEAD
 void w_levenshtein_distance(wlevtree* __restrict__ tree, const wchar_t* __restrict__ wordkey, index_t wordlen, index_t* __restrict__ path, index_t pathLength, index_t j)
+=======
+static void w_levenshtein_distance(wlevtree* tree, const wchar_t* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j)
+>>>>>>> 092429edad8871d9ae6bb70e26c269d29e145888
 {
     index_t* __restrict__ prow = tree->nodes[tree->nodes[path[j]].parent].row;
     index_t* __restrict__ crow = tree->nodes[path[j]].row;
@@ -347,7 +351,11 @@ void w_levenshtein_distance(wlevtree* __restrict__ tree, const wchar_t* __restri
     }
 }
 
+<<<<<<< HEAD
 void w_damerau_levenshtein_distance(wlevtree* __restrict__ tree, const wchar_t* __restrict__ wordkey, index_t wordlen, index_t* __restrict__ path, index_t pathLength, index_t j)
+=======
+static void w_damerau_levenshtein_distance(wlevtree* tree, const wchar_t* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j)
+>>>>>>> 092429edad8871d9ae6bb70e26c269d29e145888
 {
     index_t* __restrict__ prow = tree->nodes[tree->nodes[path[j]].parent].row;
     index_t* __restrict__ crow = tree->nodes[path[j]].row;
