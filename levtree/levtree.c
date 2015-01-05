@@ -217,7 +217,7 @@ void lprint(levtree_standing* s)
     }
 }
 
-void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
+void levtree_search(levtree* __restrict__ tree, const char* __restrict__ wordkey, index_t n_of_matches)
 {
 
     if(!tree->allocated)
@@ -238,7 +238,7 @@ void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches)
     index_t i,j,pathindex;
     index_t size;
     size=strlen(wordkey)+1;
-    index_t *path= (index_t*) malloc(sizeof(index_t)*(tree->maxsize+2));
+    index_t* __restrict__ path= (index_t*) malloc(sizeof(index_t)*(tree->maxsize+2));
     if(size>tree->maxsize)
     {
         levtree_realloc_rows(tree,size);
@@ -315,10 +315,10 @@ void levtree_set_case_sensitive(levtree *tree, byte_t boolean)
     }
 }
 
-static void levenshtein_distance(levtree* tree, const char* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j)
+static void levenshtein_distance(levtree* __restrict__ tree, const char* __restrict__ wordkey, index_t wordlen, index_t* __restrict__ path, index_t pathLength, index_t j)
 {
-    index_t* prow = tree->nodes[tree->nodes[path[j]].parent].row;
-    index_t* crow = tree->nodes[path[j]].row;
+    index_t* __restrict__ prow = tree->nodes[tree->nodes[path[j]].parent].row;
+    index_t* __restrict__ crow = tree->nodes[path[j]].row;
     crow[0]=prow[0]+1;
     index_t k;
     for(k=1; k<wordlen; k++)
@@ -333,11 +333,11 @@ static void levenshtein_distance(levtree* tree, const char* wordkey, index_t wor
     }
 }
 
-static void damerau_levenshtein_distance(levtree* tree, const char* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j)
+static void damerau_levenshtein_distance(levtree* __restrict__ tree, const char* __restrict__ wordkey, index_t wordlen, index_t* __restrict__ path, index_t pathLength, index_t j)
 {
-    index_t* prow = tree->nodes[tree->nodes[path[j]].parent].row;
-    index_t* crow = tree->nodes[path[j]].row;
-    index_t* pprow = tree->nodes[tree->nodes[path[j+1]].parent].row;
+    index_t* __restrict__ prow = tree->nodes[tree->nodes[path[j]].parent].row;
+    index_t* __restrict__ crow = tree->nodes[path[j]].row;
+    index_t* __restrict__ pprow = tree->nodes[tree->nodes[path[j+1]].parent].row;
     crow[0]=prow[0]+1;
     index_t k;
     for(k=1; k<wordlen; k++)
