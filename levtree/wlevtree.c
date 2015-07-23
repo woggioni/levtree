@@ -9,9 +9,9 @@
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
 #define min4(a,b,c,d) ((a)< (b) ? min3((a),(c),(d)) : min3((b),(c),(d)))
 
-extern inline void wlevtree_alloc_rows(wlevtree* tree, index_t newsize);
-extern inline void wlevtree_realloc_rows(wlevtree* tree, index_t newsize);
-extern inline void wlevtree_delete_rows(wlevtree* tree);
+static void wlevtree_alloc_rows(wlevtree* tree, index_t newsize);
+static void wlevtree_realloc_rows(wlevtree* tree, index_t newsize);
+static void wlevtree_delete_rows(wlevtree* tree);
 
 
 byte_t static w_case_insensitive_checker(wchar_t k1, wchar_t k2)

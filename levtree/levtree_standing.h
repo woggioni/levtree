@@ -21,13 +21,13 @@ typedef struct
 }levtree_standing;
 
 
-inline void levtree_standing_init(levtree_standing *s, index_t size);
+void levtree_standing_init(levtree_standing *s, index_t size);
 
-inline void levtree_standing_free(levtree_standing *s);
+void levtree_standing_free(levtree_standing *s);
 
-inline void levtree_standing_insert(levtree_standing *s, index_t pos, levtree_result res);
+void levtree_standing_insert(levtree_standing *s, index_t pos, levtree_result res);
 
-inline void levtree_standing_add_result(levtree_standing* s, index_t id, index_t dist);
+void levtree_standing_add_result(levtree_standing* s, index_t id, index_t dist);
 
 
 #endif // LEVTREE_STANDING_H

@@ -247,7 +247,6 @@ wlevtree_levtree_search_id(wlevtree_wlevtree_obj* self, PyObject *args, PyObject
 
 static PyObject* wlevtree_levtree_add(wlevtree_wlevtree_obj* self, PyObject *args)
 {
-    wchar_t *cstring;
     PyObject * wordkey;
     if(!PyArg_ParseTuple(args, "O!", &PyUnicode_Type, &wordkey))
     {
@@ -257,13 +256,14 @@ static PyObject* wlevtree_levtree_add(wlevtree_wlevtree_obj* self, PyObject *arg
     PyList_Append(self->wordlist, wordkey);
     if(PyUnicode_Check(wordkey))
     {
-        cstring = PyUnicode_AsUnicode(wordkey);
+        wchar_t *cstring = PyUnicode_AsUnicode(wordkey);
         if(PyErr_Occurred())
         {
             return NULL;
         }
+        wlevtree_add_word(self->tree, cstring, id);
     }
-    wlevtree_add_word(self->tree, cstring, id);
+
     return Py_None;
 }
 
