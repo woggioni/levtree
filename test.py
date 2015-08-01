@@ -5,7 +5,7 @@ import levtree
 from levtree import Levtree  #,Wlevtree
 
 def ptest():
-    searches = ["camel", "coriolis", "mattel", "cruzer", "cpoper"];
+    searches = ["camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"];
     wordlist=[]
     for word in open('/usr/share/dict/cracklib-small','r'):
         wordlist.append(word[:-1])
@@ -14,10 +14,10 @@ def ptest():
     tree=Levtree(tuple(wordlist))
     tree.setCaseSensitive(False)
     tree.setAlgorithm(levtree.DAMERAU_LEVENSHTEIN)
-    for i in range(10):
+    for i in range(50):
         for key in searches:
             res = tree.search(key,5)
-            print(res)
+    print(res)
 
 """
 res = tree.search_id('IDIOT',3)
