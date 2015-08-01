@@ -58,7 +58,7 @@ static inline void levtree_delete_rows(levtree* tree)
 levtree_result levtree_get_result(levtree* tree, index_t pos)
 {
     pos = tree->standing->count-pos-1;
-    levtree_result* res = tree->standing->bottom.next;
+    levtree_result* res = tree->standing->bottom;
     index_t i;
     for(i=0; i<tree->standing->count; i++)
     {
@@ -209,7 +209,7 @@ void lprint(levtree_standing* s)
 {
     printf("----------STANDING----------\n");
     index_t i;
-    levtree_result *r = s->bottom.next;
+    levtree_result *r = s->bottom;
     for(i=0; i<s->count; i++)
     {
         printf("node: %d, distance: %d, next: %p\n",r->id, r->distance, (void*)r->next);

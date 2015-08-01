@@ -1,5 +1,16 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "levtree_standing.h"
+
+static inline void levtree_standing_print(levtree_standing *s)
+{
+	levtree_result *r = s->bottom;
+	while(r)
+	{
+		printf("{id: %d, distance: %d, next: %p}\n", r->id, r->distance, r->next);
+		r = r->next;
+	}
+}
 
 extern void levtree_standing_free(levtree_standing *s)
 {
@@ -10,83 +21,110 @@ extern void levtree_standing_init(levtree_standing *s, index_t size)
 {
     s->entries = (levtree_result*) malloc(sizeof(levtree_result)*size);
     s->size = size;
-    s->bottom.next = s->entries;
-    s->bottom.distance = -1;
+    s->bottom = s->entries;
     s->count = 0;
 }
 
 
 extern void levtree_standing_insert(levtree_standing *s, index_t pos, levtree_result res)
 {
-    index_t i=0;
-    levtree_result *tres;
-    tres = &s->bottom;
-    levtree_result *tmp;
+    res.next = NULL;
+           
+    levtree_result *cur;
+    levtree_result *new_result, *old;
     if(s->count < s->size)
     {
-        tmp = &s->entries[s->count];
+        new_result = &s->entries[s->count];
+        s->count++;
     }
     else
     {
-        tmp = s->bottom.next;
-        s->bottom.next = tmp->next;
-        if(pos)
-            pos--;
+        new_result = s->bottom;
+        s->bottom = new_result->next;
+        if(pos) pos--;
     }
-    *tmp = res;
-    while(tres)
+    *new_result = res;
+    if(pos == 0)
     {
-        if(i==pos)
+		old = s->bottom;
+		s->bottom = new_result;
+		new_result->next = old;
+		return;
+	}
+	
+	index_t i=0;
+	cur = s->bottom;
+    while(cur)
+    {
+        if(++i==pos)
         {
-            tmp->next = tres->next;
-            tres->next = tmp;
-            if(s->count<s->size)
-            {
-                s->count++;
-            }
+			old = cur->next;
+			cur->next = new_result;
+			
+			new_result->next = old;
+			if(s->bottom == new_result)
+			{
+				s->bottom = new_result;
+			}
             break;
         }
-        tres = tres->next;
-        i++;
+        cur = cur->next;
     }
 }
 
 extern void levtree_standing_add_result(levtree_standing* s, index_t id, index_t dist)
-{
+{	
     levtree_result entry = {id,dist,NULL};
+    
+    //puts("-----------------------------------");
+	//printf("{id: %d, distance: %d, ", entry.id, entry.distance);
+
+	
+	//if(id==517)
+	//{
+		//puts("");
+	//}
+    
+    //levtree_result zero = {0,0,NULL};
     index_t i;
     if(s->count == 0)
     {
-        for(i=0; i<s->size; i++)
-        {
-            s->entries[i] = entry;
-            if(i<s->size-1)
-            {
-                s->entries[i].next = &s->entries[i+1];
-            }
-        }
+		s->entries[0] = entry;
+		
+        //for(i=1; i<s->size; i++)
+        //{
+            //s->entries[i] = zero;
+        //}
         s->count++;
         return;
     }
-    levtree_result *r = s->bottom.next;
+    levtree_result *r = s->bottom;
     index_t insertion_point;
     byte_t insert=0;
+    
     if(s->count < s->size)
     {
         insert=1;
         insertion_point = 0;
     }
-    for(i=0; i<=s->count; i++)
-    {
-        if(dist < r->distance)
-        {
-            insert=1;
-            insertion_point = i;
-        }
-        r = r->next;
-    }
+	for(i=1; i <= s->count; i++)
+	{
+		if(dist < r->distance)
+		{
+			insert=1;
+			insertion_point = i;
+		}
+		r = r->next;
+	}
+	
+	fflush(stdout);
     if(insert)
     {
         levtree_standing_insert(s,insertion_point,entry);
     }
+    
+    //printf("insertion point: %d}\n", insertion_point);
+    //puts("-----------------------------------");
+    //levtree_standing_print(s);
+    //puts("");
 }

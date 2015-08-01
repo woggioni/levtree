@@ -38,33 +38,21 @@ int main2()
 
 int main()
 {
+	FILE *file = fopen("/usr/share/dict/cracklib-small","r");
+	
     levtree tree;
-    char* wordlist[] = {"csoa","ciao","ocsa","coniglio","casa","cane", "scuola"};
-    levtree_init(&tree, wordlist,7);
-    index_t i;
+    char* wordlist[] = {"csoa"};
+    levtree_init(&tree, wordlist,1);
+    index_t i=0;
     levtree_result res;
-    levtree_search(&tree,"cosa",4);
-    for(i=0; i<tree.standing->count;i++)
+    char buffer[50];
+    while(!feof(file))
     {
-        res = levtree_get_result(&tree,i);
-        printf("id: %u\tdistance: %u\n",res.id,res.distance);
-    }
-    levtree_set_algorithm(&tree, DAMERAU_LEVENSHTEIN);
-    levtree_search(&tree,"cosa",4);
-    for(i=0; i<tree.standing->count;i++)
-    {
-        res = levtree_get_result(&tree,i);
-        printf("id: %u\tdistance: %u\n",res.id,res.distance);
-    }
-    levtree_add_word(&tree, "scimmia", 7);
-    levtree_search(&tree, "schimma",4);
-    for(i=0; i<tree.standing->count;i++)
-    {
-        res = levtree_get_result(&tree,i);
-        printf("id: %u\tdistance: %u\n",res.id,res.distance);
-    }
+		fscanf(file, "%s\n", buffer);
+		levtree_add_word(&tree, buffer, i++);
+	}
 
-    levtree_search(&tree, "schimma",4);
+    levtree_search(&tree, "schimma",60);
     for(i=0; i<tree.standing->count;i++)
     {
         res = levtree_get_result(&tree,i);

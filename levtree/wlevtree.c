@@ -64,7 +64,7 @@ static inline void wlevtree_delete_rows(wlevtree* tree)
 levtree_result wlevtree_get_result(wlevtree* tree, index_t pos)
 {
     pos = tree->standing->count-pos-1;
-    levtree_result* res = tree->standing->bottom.next;
+    levtree_result* res = tree->standing->bottom;
     index_t i;
     for(i=0; i<tree->standing->count; i++)
     {

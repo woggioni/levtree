@@ -15,7 +15,7 @@ struct levtree_result
 typedef struct
 {
     levtree_result* entries;
-    levtree_result bottom;
+    levtree_result *bottom;
     index_t size;
     index_t count;
 }levtree_standing;
