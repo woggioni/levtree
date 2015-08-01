@@ -76,25 +76,10 @@ extern void levtree_standing_add_result(levtree_standing* s, index_t id, index_t
 {	
     levtree_result entry = {id,dist,NULL};
     
-    //puts("-----------------------------------");
-	//printf("{id: %d, distance: %d, ", entry.id, entry.distance);
-
-	
-	//if(id==517)
-	//{
-		//puts("");
-	//}
-    
-    //levtree_result zero = {0,0,NULL};
     index_t i;
     if(s->count == 0)
     {
 		s->entries[0] = entry;
-		
-        //for(i=1; i<s->size; i++)
-        //{
-            //s->entries[i] = zero;
-        //}
         s->count++;
         return;
     }
@@ -122,9 +107,4 @@ extern void levtree_standing_add_result(levtree_standing* s, index_t id, index_t
     {
         levtree_standing_insert(s,insertion_point,entry);
     }
-    
-    //printf("insertion point: %d}\n", insertion_point);
-    //puts("-----------------------------------");
-    //levtree_standing_print(s);
-    //puts("");
 }
