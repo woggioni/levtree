@@ -39,25 +39,40 @@ int main2()
 int main()
 {
 	FILE *file = fopen("/usr/share/dict/cracklib-small","r");
-	
+	const char* searches[] = {"camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"};
     levtree tree;
     char* wordlist[] = {"csoa"};
     levtree_init(&tree, wordlist,1);
-    index_t i=0;
+    index_t i,j;
     levtree_result res;
     char buffer[50];
+    
+    i=0;
     while(!feof(file))
     {
 		fscanf(file, "%s\n", buffer);
 		levtree_add_word(&tree, buffer, i++);
 	}
 
-    levtree_search(&tree, "schimma",60);
-    for(i=0; i<tree.standing->count;i++)
-    {
-        res = levtree_get_result(&tree,i);
-        printf("id: %u\tdistance: %u\n",res.id,res.distance);
-    }
+	for(i=0; i<50; i++)
+	{
+		for(j=0; j<6; j++)
+		{
+			levtree_search(&tree, searches[j], 6);
+		}
+	}
+	
+	for(j=0; j<6; j++)
+	{
+		levtree_search(&tree, searches[j], 6);
+		
+		for(i=0; i<tree.standing->count;i++)
+		{
+			res = levtree_get_result(&tree,i);
+			printf("id: %u\tdistance: %u\n",res.id,res.distance);
+		}
+		puts("");
+	}
 
     levtree_free(&tree);
     return 0;

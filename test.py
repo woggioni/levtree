@@ -16,8 +16,11 @@ def ptest():
     tree.setAlgorithm(levtree.DAMERAU_LEVENSHTEIN)
     for i in range(50):
         for key in searches:
-            res = tree.search(key,5)
-    print(res)
+            res = tree.search(key,6)
+    
+    for key in searches:
+        res = tree.search(key,6)
+        print(res)
 
 """
 res = tree.search_id('IDIOT',3)

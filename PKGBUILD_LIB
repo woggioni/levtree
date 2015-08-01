@@ -7,7 +7,7 @@ pkgdesc="A small C library for fast fuzzy string search"
 license="GPL"
 depends=('')
 source=('levtree.tar.gz')
-md5sums=('deabb4ed6154f5e9c7e7a02eaa76c2e3')
+md5sums=('9731af3b6325f279f2ea8dc3167118b8')
 
 build() {
 cd $srcdir/levtree
