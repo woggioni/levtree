@@ -7,17 +7,16 @@ pkgdesc="A small C library for fast fuzzy string search"
 license="GPL"
 depends=('')
 source=('levtree.tar.gz')
-md5sums=('9731af3b6325f279f2ea8dc3167118b8')
+md5sums=('f567abda5386de0f06aff8150286286f')
 
 build() {
 cd $srcdir/levtree
-qmake levtree.pro
+cmake .
 make
 }
 
 package()
 {
-
 	cd $srcdir/levtree
-	make install INSTALL_ROOT="$pkgdir"
+	make install DESTDIR="$pkgdir"
 }
