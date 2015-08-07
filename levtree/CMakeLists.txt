@@ -20,11 +20,16 @@ list( APPEND CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 #add_library (core OBJECT ${SOURCES})
 add_library (levtree SHARED ${SOURCES})
-add_library (levtree_static STATIC ${SOURCES})
+#add_library (levtree_static STATIC ${SOURCES})
 add_library (levtree++ SHARED ${SOURCES_CPP})
 
-add_executable(main2.x main2.cpp ${SOURCES_CPP} ${SOURCES})
-add_executable(main.x main.c ${SOURCES})
+add_executable(main2.x main2.cpp)
+add_executable(main.x main.c)
+
+target_link_libraries(main.x levtree)
+target_link_libraries(main2.x levtree++ levtree)
+
+
 
 install(TARGETS levtree LIBRARY DESTINATION /usr/local/lib)
 install(TARGETS levtree++ LIBRARY DESTINATION /usr/local/lib)
