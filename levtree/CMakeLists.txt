@@ -33,5 +33,6 @@ target_link_libraries(main2.x levtree++ levtree)
 
 install(TARGETS levtree LIBRARY DESTINATION /usr/local/lib)
 install(TARGETS levtree++ LIBRARY DESTINATION /usr/local/lib)
-
+install(FILES common.h  levnode.h  levtree.h	levtree_standing.h  wlevnode.h	wlevtree.h DESTINATION /usr/local/include/levtree)
+install(FILES cpp/Levtree.hpp DESTINATION /usr/local/include/levtree/cpp)
 
