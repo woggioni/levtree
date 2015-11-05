@@ -16,6 +16,9 @@ set(SOURCES_CPP
 	cpp/Levtree.cpp
 )
 
+enable_testing()
+
+
 list( APPEND CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 #add_library (core OBJECT ${SOURCES})
@@ -23,11 +26,14 @@ add_library (levtree SHARED ${SOURCES})
 #add_library (levtree_static STATIC ${SOURCES})
 add_library (levtree++ SHARED ${SOURCES_CPP})
 
-add_executable(main2.x main2.cpp)
-add_executable(main.x main.c)
+add_executable(test_cpp.x test.cpp)
+add_executable(test_c.x test.c)
 
-target_link_libraries(main.x levtree)
-target_link_libraries(main2.x levtree++ levtree)
+add_test(cxx_test test_cpp.x)
+add_test(c_test test_c.x)
+
+target_link_libraries(test_c.x levtree)
+target_link_libraries(test_cpp.x levtree++ levtree)
 
 
 
