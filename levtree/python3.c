@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "wlevtree.h"
-#include <python3.4m/Python.h>
-#include <python3.4m/structmember.h>
+#include <Python.h>
+#include <structmember.h>
 #include <locale.h>
 
 static PyObject* PYLEVENSHTEIN;
