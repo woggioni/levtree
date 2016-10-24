@@ -1,12 +1,12 @@
-#!/usr/bin/python
+#!/bin/env python3
 from io import StringIO
 import os
 import sys
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, run
 from optparse import OptionParser
 usage = "Usage: %prog [options] src_folder"
 parser = OptionParser(usage)
-parser.add_option("-p", "--pkgbuilg", dest="pkgbuild",metavar="SQL_FILE",
+parser.add_option("-p", "--pkgbuilg", dest="pkgbuild",metavar="PKGBUILD_FILE",
                   help="Specify the pkgbuild script filename, if not given defaults to 'PKGBUILD'")
                   
 optlist, args = parser.parse_args()
@@ -21,11 +21,10 @@ else:
 arkname=args[0]
 if arkname[-1] == '/':
   arkname = arkname[:-1]
-if os.system('tar -zcf %s.tar.gz %s' % (arkname,arkname)):
-  print('Error: File %s not found' % (arkname))
-p = Popen(['md5sum','%s.tar.gz' % (arkname)], stdout=PIPE)
+run(['tar', '-zcf', arkname + 'tar.gz', arkname]).check_returncode()
+hash = run(['md5sum','%s.tar.gz' % (arkname)], stdout=PIPE, universal_newlines=True).stdout.split()[0]
+print(hash)
 
-hash=str(p.stdout.read()).split()[0]
 print('Hash key of the archive file: ' + hash)
 
 pkgbuild=open(pkgbuild_name,'r')

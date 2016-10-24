@@ -2,9 +2,9 @@
 #define LEVTREE_H
 
 #include <stdlib.h>
-#include "common.h"
-#include "levnode.h"
-#include "levtree_standing.h"
+#include "levtree/common.h"
+#include "levtree/levnode.h"
+#include "levtree/levtree_standing.h"
 
 typedef struct levtree levtree;
 

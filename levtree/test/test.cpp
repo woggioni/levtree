@@ -4,7 +4,7 @@
 #include <fstream>
 #include <codecvt>
 
-#include "cpp/Levtree.hpp"
+#include "levtree++/Levtree.hpp"
 
 
 using namespace levtree;
@@ -14,28 +14,28 @@ using namespace std;
 int main()
 {
 
-    std::wifstream wif("/usr/share/dict/cracklib-small");
-    wstring word;
-    vector<wstring> wordlist;
+    std::ifstream ifs("/usr/share/dict/cracklib-small");
+    string word;
+    vector<string> wordlist;
 
-    while (std::getline(wif, word))
+    while (std::getline(ifs, word))
     {
     	wordlist.push_back(word);
     }
 
-	wstring searches[] = {wstring(L"camel"), wstring(L"coriolis"), wstring(L"mattel"), wstring(L"cruzer"), wstring(L"cpoper"), wstring(L"roublesoot")};
+    string searches[] = {"camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"};
 
 	index_t i,j;
 
     Levtree tree(wordlist);
 
-	for(i=0; i<50; i++)
-	{
-		for(j=0; j<6; j++)
-		{
-			tree.search(searches[j],6);
-		}
-	}
+    for(i=0; i<50; i++)
+    {
+        for(j=0; j<6; j++)
+        {
+            tree.search(searches[j],6);
+        }
+    }
 
 	
 	for(j=0; j<6; j++)
@@ -44,7 +44,7 @@ int main()
 		
 		for(LevtreeResult res : standing)
 		{
-			printf("id: %u\tdistance: %u\t word: %ls\n",res.id,res.distance, tree.getWord(res.id).c_str());
+            printf("id: %u\tdistance: %u\t word: %s\n",res.id,res.distance, tree.getWord(res.id).c_str());
 		}
 		puts("");
 	}

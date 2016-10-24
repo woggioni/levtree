@@ -1,7 +1,7 @@
 #ifndef LEVTREE_STANDING_H
 #define LEVTREE_STANDING_H
 
-#include "levnode.h"
+#include "levtree/levnode.h"
 
 typedef struct levtree_result levtree_result;
 

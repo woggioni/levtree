@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void wlevnode_init(wlevnode* node, wchar_t key, index_t index)
+void wlevnode_init(wlevnode* node, wchar_t key, size_t index)
 {
     node->key = key;
     node->id = index;
@@ -25,9 +25,9 @@ void wlevnode_free(wlevnode* node)
     free(node->row);
 }
 
-void wlevnode_alloc(wlevnode* node, index_t size)
+void wlevnode_alloc(wlevnode* node, size_t size)
 {
-    node->row = (unsigned*) malloc( sizeof(unsigned)*size );
+    node->row = (size_t*) malloc( sizeof(size_t)*size );
 }
 
 
