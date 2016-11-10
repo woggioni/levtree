@@ -1,4 +1,4 @@
-from Levtree import Levtree
+from levtree import Levtree
 wordlist=[]
 for word in open('/usr/share/dict/cracklib-small','r'):
 	wordlist.append(word[:-1])

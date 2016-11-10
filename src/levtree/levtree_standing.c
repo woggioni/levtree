@@ -7,7 +7,7 @@ static inline void levtree_standing_print(levtree_standing *s)
 	levtree_result *r = s->bottom;
 	while(r)
 	{
-		printf("{id: %d, distance: %d, next: %p}\n", r->id, r->distance, r->next);
+        printf("{id: %d, distance: %d, next: %p}\n", r->id, r->distance, (void *) r->next);
 		r = r->next;
 	}
 }

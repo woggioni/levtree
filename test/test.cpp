@@ -44,7 +44,7 @@ int main()
 		
 		for(LevtreeResult res : standing)
 		{
-            printf("id: %u\tdistance: %u\t word: %s\n",res.id,res.distance, tree.getWord(res.id).c_str());
+            printf("id: %lu\tdistance: %lu\t word: %s\n", res.id, res.distance, tree.getWord(res.id).c_str());
 		}
 		puts("");
 	}

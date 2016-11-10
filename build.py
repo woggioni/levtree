@@ -21,7 +21,7 @@ else:
 arkname=args[0]
 if arkname[-1] == '/':
   arkname = arkname[:-1]
-run(['tar', '-zcf', arkname + 'tar.gz', arkname]).check_returncode()
+run(['tar', '-zcf', arkname + '.tar.gz', arkname]).check_returncode()
 hash = run(['md5sum','%s.tar.gz' % (arkname)], stdout=PIPE, universal_newlines=True).stdout.split()[0]
 print(hash)
 

@@ -30,7 +30,7 @@ Levtree::Levtree(const std::vector<string> &wordvector) :
 	{
         const std::string& str = wordvector[i];
         wsvector[i] = convert2wchar(str);
-        const void *p1 = &wsvector[i][0], *p2 = &str[0];
+        //const void *p1 = &wsvector[i][0], *p2 = &str[0];
         ptvector[i] = &wsvector[i][0];
 		//printf("WORD: %ls\n", wordvector[i].c_str());
 	}

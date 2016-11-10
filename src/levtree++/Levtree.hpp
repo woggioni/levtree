@@ -24,15 +24,15 @@ namespace levtree
 
     class Levtree
     {
-        wlevtree* tree;
+        wlevtree * tree;
         std::vector<std::string> wordvector;
     public:
-        void addWord(const std::string &word);
+        void addWord(const std::string & word);
         std::string getWord(size_t id);
-        Levtree(const std::vector<std::string> &wordvector = std::vector<std::string>());
+        Levtree(const std::vector<std::string> & wordvector = std::vector<std::string>());
         ~Levtree();
-        std::vector<LevtreeResult> search(const std::string &text,
-                size_t number_of_matches = 4);
+        std::vector<LevtreeResult> search(const std::string & text,
+                                          size_t number_of_matches = 4);
         void setCaseSensitive(bool b);
         void setAlgorithm(levtree_algorithm algo);
     };
