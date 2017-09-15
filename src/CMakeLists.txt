@@ -6,13 +6,12 @@ set(SOURCES
     levtree/wlevtree.c
     levtree/levtree.c
     levtree/wlevnode.c
+    levtree/common.h
 )
 
 set(SOURCES_CPP
         levtree++/Levtree.cpp
 )
-
-enable_testing()
 
 #INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 add_library (levtree SHARED ${SOURCES})
@@ -53,10 +52,6 @@ install(FILES ${HEADERS} DESTINATION include/levtree)
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
-if(NOT PYTHON_VERSION)
-    set(PYTHON_VERSION 3 CACHE INT "Python version for which generate bindings")
-endif()
-
 SET(CMAKE_SWIG_FLAGS "")
 
 function(add_python_bindings py_version)
@@ -67,7 +62,8 @@ function(add_python_bindings py_version)
     SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/swig/python${py_version}/levtree)
     SET_SOURCE_FILES_PROPERTIES(levtree++/levtree.i PROPERTIES CPLUSPLUS ON)
     #SET_SOURCE_FILES_PROPERTIES(levtree.i PROPERTIES SWIG_FLAGS "-includeall")
-    SWIG_ADD_MODULE(pylevtree${py_version} python levtree++/levtree.i)
+    #SWIG_ADD_MODULE(pylevtree${py_version} python levtree++/levtree.i)
+    swig_add_library(pylevtree${py_version} LANGUAGE python SOURCES levtree++/levtree.i)
     SWIG_LINK_LIBRARIES(pylevtree${py_version} levtree++ ${PYTHON_LIBRARIES})
     set_target_properties(${SWIG_MODULE_pylevtree${py_version}_REAL_NAME} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SWIG_OUTDIR}
@@ -82,7 +78,8 @@ add_python_bindings(${PYTHON_VERSION})
 
 SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/swig/java/)
 INCLUDE_DIRECTORIES(/usr/lib/jvm/default/include /usr/lib/jvm/default/include/linux)
-SWIG_ADD_MODULE(jlevtree java levtree++/levtree.i)
+#SWIG_ADD_MODULE(jlevtree java levtree++/levtree.i)
+swig_add_library(jlevtree LANGUAGE java SOURCES levtree++/levtree.i)
 SWIG_LINK_LIBRARIES(jlevtree levtree++)
 set_target_properties(${SWIG_MODULE_jlevtree_REAL_NAME} PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SWIG_OUTDIR}

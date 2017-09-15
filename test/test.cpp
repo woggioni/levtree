@@ -10,6 +10,12 @@
 using namespace levtree;
 using namespace std;
 
+#ifdef EMSCRIPTEN
+EMSCRIPTEN_BINDINGS(stl_wrappers) {
+    register_vector<std::string>("VectorString");
+}
+#endif
+
 
 int main()
 {
