@@ -52,19 +52,16 @@ install(FILES ${HEADERS} DESTINATION include/levtree)
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
-SET(CMAKE_SWIG_FLAGS "")
-
 function(add_python_bindings py_version)
     set(PYTHONLIBS_FOUND FALSE)
 #    set(PYTHON_INCLUDE_DIR "" CACHE STRING "")
     FIND_PACKAGE(PythonLibs ${py_version} REQUIRED)
-    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
     SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/swig/python${py_version}/levtree)
+    SET(CMAKE_SWIG_FLAGS -O -I${PYTHON_INCLUDE_PATH} -I${CMAKE_CURRENT_SOURCE_DIR})
     SET_SOURCE_FILES_PROPERTIES(levtree++/levtree.i PROPERTIES CPLUSPLUS ON)
-    #SET_SOURCE_FILES_PROPERTIES(levtree.i PROPERTIES SWIG_FLAGS "-includeall")
-    #SWIG_ADD_MODULE(pylevtree${py_version} python levtree++/levtree.i)
     swig_add_library(pylevtree${py_version} LANGUAGE python SOURCES levtree++/levtree.i)
     SWIG_LINK_LIBRARIES(pylevtree${py_version} levtree++ ${PYTHON_LIBRARIES})
+    TARGET_INCLUDE_DIRECTORIES(_pylevtree${py_version} PRIVATE ${PYTHON_INCLUDE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
     set_target_properties(${SWIG_MODULE_pylevtree${py_version}_REAL_NAME} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SWIG_OUTDIR}
         OUTPUT_NAME _levtree
@@ -76,15 +73,18 @@ endfunction()
 add_python_bindings(${PYTHON_VERSION})
 #add_python_bindings(3)
 
-SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/swig/java/)
-INCLUDE_DIRECTORIES(/usr/lib/jvm/default/include /usr/lib/jvm/default/include/linux)
-#SWIG_ADD_MODULE(jlevtree java levtree++/levtree.i)
-swig_add_library(jlevtree LANGUAGE java SOURCES levtree++/levtree.i)
-SWIG_LINK_LIBRARIES(jlevtree levtree++)
-set_target_properties(${SWIG_MODULE_jlevtree_REAL_NAME} PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SWIG_OUTDIR}
+find_package(JNI)
+if(JNI_FOUND)
+    message("----------- ${JNI_INCLUDE_DIRS} --------------")
+    SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/swig/java/)
+    SET(CMAKE_SWIG_FLAGS -O -I${CMAKE_CURRENT_SOURCE_DIR})
+    swig_add_library(jlevtree LANGUAGE java SOURCES levtree++/levtree.i)
+    SWIG_LINK_LIBRARIES(jlevtree levtree++)
+    target_include_directories(jlevtree PRIVATE ${JNI_INCLUDE_DIRS})
+    set_target_properties(${SWIG_MODULE_jlevtree_REAL_NAME} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SWIG_OUTDIR}
     )
-
+endif()
 #set_property(TARGET levtree++ PROPERTY OUTPUT_NAME $<TARGET_FILE_NAME:levtree++>)
 #get_target_property(LEVTREE_LIBS levtree++ OUTPUT_NAME)
 #get_target_property(TEST_VAR levtree++ INTERFACE_LINK_LIBRARIES)
