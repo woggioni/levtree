@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import json
 import levtree
 from levtree import Levtree  #,Wlevtree
 
 def ptest():
     searches = ["camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"];
-    wordlist = json.load(open("dictionary.json", 'r'))
+    wordlist = [line.strip() for line in open("dictionary.txt", 'r')]
     #wordlist.append(3)
     #pdb.set_trace()
     tree=Levtree(tuple(wordlist))
     tree.setCaseSensitive(False)
     tree.setAlgorithm(levtree.DAMERAU_LEVENSHTEIN)
-    for i in range(50):
+    for i in range(10):
         for key in searches:
             res = tree.search(key,6)
     
@@ -36,7 +35,7 @@ print([ (wordlist[x[0]],x[1]) for x in res ])
 """
 
 def wtest():
-    wordlist = json.load(open("dictionary.json", 'r'))
+    wordlist = [line.strip() for line in open("dictionary.txt", 'r')]
     tree=Levtree(tuple(wordlist))
     res = tree.search(u'IDIOT',3,damerau_levehnshtein=True, case_sensitive=True)
     print(res)
@@ -57,7 +56,7 @@ def wtest():
     print(tree.search(u'schimma',3))
 
 def test():
-    wordlist = json.load(open("dictionary.json", 'r'))
+    wordlist = [line.strip() for line in open("dictionary.txt", 'r')]
     tree=Levtree(tuple(wordlist))
     res = tree.search('IDIOT',3,damerau_levehnshtein=True, case_sensitive=True)
     print(res)

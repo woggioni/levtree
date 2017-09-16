@@ -3,57 +3,107 @@
 #include <sstream>
 #include <fstream>
 #include <codecvt>
+#include <chrono>
+#include <map>
 
 #include "levtree++/Levtree.hpp"
 
+#ifdef EMSCRIPTEN
+//#include <emscripten/bind.h>
+//EMSCRIPTEN_BINDINGS(stl_wrappers) {
+//    emscripten::asm ()register_vector<std::string>("VectorString");
+//}
+#endif
 
 using namespace levtree;
 using namespace std;
 
-#ifdef EMSCRIPTEN
-EMSCRIPTEN_BINDINGS(stl_wrappers) {
-    register_vector<std::string>("VectorString");
-}
-#endif
+class Chronometer
+{
+    std::chrono::high_resolution_clock::time_point start;
+    std::map<std::string, std::chrono::high_resolution_clock::duration> accumulator;
 
+public:
+    Chronometer()
+    {
+        start = std::chrono::high_resolution_clock::now();
+    }
+    void reset();
+
+    template<typename T = std::chrono::milliseconds>
+    long elapsed()
+    {
+        auto now = std::chrono::high_resolution_clock::now();
+        return std::chrono::duration_cast<T>(now - start).count();
+    }
+
+    template<typename T = std::chrono::milliseconds>
+    static long probeTime(const std::string & probeName)
+    {
+        return std::chrono::duration_cast<T>(getInstance().accumulator.at(probeName)).count();
+    }
+
+    class ChronometerProbe
+    {
+        std::string name;
+        Chronometer & chr;
+        bool stopped;
+        std::chrono::high_resolution_clock::time_point start;
+    public:
+        ChronometerProbe(const std::string & name, Chronometer & chr);
+
+        void stop();
+        ~ChronometerProbe();
+    };
+
+    ChronometerProbe getProbe(const std::string & probeName);
+    static Chronometer & getInstance();
+};
 
 int main()
 {
+    std::ifstream ifs(DICTIONARY_FILE);
 
-    std::ifstream ifs("/usr/share/dict/cracklib-small");
+    if(!ifs)
+    {
+        fprintf(stderr, "Cannot open input file '%s'", DICTIONARY_FILE);
+        exit(-1);
+    }
+
     string word;
     vector<string> wordlist;
 
-    while (std::getline(ifs, word))
+    while(std::getline(ifs, word))
     {
-    	wordlist.push_back(word);
+        wordlist.push_back(word);
     }
 
     string searches[] = {"camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"};
-
-	index_t i,j;
-
+    index_t i, j;
     Levtree tree(wordlist);
+    Chronometer chr;
 
-    for(i=0; i<50; i++)
+    for(i = 0; i < 10; i++)
     {
-        for(j=0; j<6; j++)
+        for(j = 0; j < 6; j++)
         {
-            tree.search(searches[j],6);
+            tree.search(searches[j], 6);
         }
     }
 
-	
-	for(j=0; j<6; j++)
-	{
-		vector<LevtreeResult> standing = tree.search(searches[j],6);
-		
-		for(LevtreeResult res : standing)
-		{
-            printf("id: %lu\tdistance: %lu\t word: %s\n", res.id, res.distance, tree.getWord(res.id).c_str());
-		}
-		puts("");
-	}
+    printf("Elapsed time: %.3f s\n", chr.elapsed() / 1000.0);
+
+    for(j = 0; j < 6; j++)
+    {
+        vector<LevtreeResult> standing = tree.search(searches[j], 6);
+
+        for(LevtreeResult res : standing)
+        {
+            printf("id: %zd\tdistance: %zd\t word: %s\n", res.id, res.distance, tree.getWord(res.id).c_str());
+        }
+
+        puts("");
+    }
 
     return 0;
 }

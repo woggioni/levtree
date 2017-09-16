@@ -14,8 +14,14 @@ set(SOURCES_CPP
 )
 
 #INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-add_library (levtree SHARED ${SOURCES})
-add_library (levtree++ SHARED ${SOURCES_CPP})
+if(NOT EMSCRIPTEN_BUILD)
+    set(LIBTYPE SHARED)
+else()
+    set(LIBTYPE STATIC)
+endif()
+
+add_library (levtree ${LIBTYPE} ${SOURCES})
+add_library (levtree++ ${LIBTYPE} ${SOURCES_CPP})
 
 target_include_directories(levtree PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -49,9 +55,6 @@ file(GLOB_RECURSE HEADERS
 )
 install(FILES ${HEADERS} DESTINATION include/levtree)
 
-FIND_PACKAGE(SWIG REQUIRED)
-INCLUDE(${SWIG_USE_FILE})
-
 function(add_python_bindings py_version)
     set(PYTHONLIBS_FOUND FALSE)
 #    set(PYTHON_INCLUDE_DIR "" CACHE STRING "")
@@ -70,20 +73,23 @@ function(add_python_bindings py_version)
     configure_file(setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 endfunction()
 
-add_python_bindings(${PYTHON_VERSION})
-#add_python_bindings(3)
+if(NOT EMSCRIPTEN_BUILD)
+    FIND_PACKAGE(SWIG REQUIRED)
+    INCLUDE(${SWIG_USE_FILE})
+    add_python_bindings(${PYTHON_VERSION})
+    #add_python_bindings(3)
 
-find_package(JNI)
-if(JNI_FOUND)
-    message("----------- ${JNI_INCLUDE_DIRS} --------------")
-    SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/swig/java/)
-    SET(CMAKE_SWIG_FLAGS -O -I${CMAKE_CURRENT_SOURCE_DIR})
-    swig_add_library(jlevtree LANGUAGE java SOURCES levtree++/levtree.i)
-    SWIG_LINK_LIBRARIES(jlevtree levtree++)
-    target_include_directories(jlevtree PRIVATE ${JNI_INCLUDE_DIRS})
-    set_target_properties(${SWIG_MODULE_jlevtree_REAL_NAME} PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SWIG_OUTDIR}
-    )
+    find_package(JNI)
+    if(JNI_FOUND)
+        SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/swig/java/)
+        SET(CMAKE_SWIG_FLAGS -O -I${CMAKE_CURRENT_SOURCE_DIR})
+        swig_add_library(jlevtree LANGUAGE java SOURCES levtree++/levtree.i)
+        SWIG_LINK_LIBRARIES(jlevtree levtree++)
+        target_include_directories(jlevtree PRIVATE ${JNI_INCLUDE_DIRS})
+        set_target_properties(${SWIG_MODULE_jlevtree_REAL_NAME} PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SWIG_OUTDIR}
+        )
+    endif()
 endif()
 #set_property(TARGET levtree++ PROPERTY OUTPUT_NAME $<TARGET_FILE_NAME:levtree++>)
 #get_target_property(LEVTREE_LIBS levtree++ OUTPUT_NAME)

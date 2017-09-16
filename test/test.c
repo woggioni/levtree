@@ -38,7 +38,7 @@ int main2()
 
 int main()
 {
-	FILE *file = fopen("/usr/share/dict/cracklib-small","r");
+    FILE *file = fopen(DICTIONARY_FILE,"r");
 	const wchar_t* searches[] = {L"camel", L"coriolis", L"mattel", L"cruzer", L"cpoper", L"roublesoot"};
     wlevtree *tree;
     wchar_t* wordlist[] = {L"csoa"};
@@ -54,7 +54,7 @@ int main()
         wlevtree_add_word(tree, buffer, i++);
 	}
 
-    for(i=0; i<50; i++)
+    for(i=0; i<10; i++)
 	{
 		for(j=0; j<6; j++)
 		{
