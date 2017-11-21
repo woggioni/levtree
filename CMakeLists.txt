@@ -12,10 +12,6 @@ elseif(EMSCRIPTEN_BUILD)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s WASM=1 -s TOTAL_MEMORY=67108864 --preload-file ./cracklib-small")
 endif()
 
-if(NOT EMSCRIPTEN_BUILD AND NOT PYTHON_VERSION)
-    set(PYTHON_VERSION 3 CACHE INT "Python version for which generate bindings")
-endif()
-
 add_subdirectory(src)
 
 enable_testing()
