@@ -1,4 +1,4 @@
-%module levtree
+%module levtreecpp
 %{
 #include "levtree++/Levtree.hpp"
 %}
