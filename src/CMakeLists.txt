@@ -97,7 +97,7 @@ function(add_python_bindings py_version)
         OUTPUT_NAME _levtreecpp
         )
     configure_file(__init__.py ${CMAKE_SWIG_OUTDIR}/__init__.py)
-    configure_file(setup.py ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
+    configure_file(setup.py ${CMAKE_CURRENT_BINARY_DIR}/swig/python${py_version}/setup.py)
 endfunction()
 
 if(NOT EMSCRIPTEN_BUILD)
