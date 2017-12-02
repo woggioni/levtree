@@ -13,7 +13,6 @@ set(SOURCES_CPP
         levtree++/Levtree.cpp
 )
 
-#INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 if(NOT EMSCRIPTEN_BUILD)
     set(LIBTYPE SHARED)
 else()
@@ -50,10 +49,15 @@ install(EXPORT levtree++Config DESTINATION share/levtree/cmake)
 export(TARGETS levtree++ FILE levtree++Config.cmake)
 
 
-file(GLOB_RECURSE HEADERS
-  "*.h" "*.hpp"
+file(GLOB_RECURSE C_HEADERS
+  "levtree/*.h"
 )
-install(FILES ${HEADERS} DESTINATION include/levtree)
+file(GLOB_RECURSE CXX_HEADERS
+  "levtree++/*.h" "levtree++/*.hpp"
+)
+
+install(FILES ${C_HEADERS} DESTINATION include/levtree)
+install(FILES ${CXX_HEADERS} DESTINATION include/levtree++)
 
 FUNCTION(PYFIND)
     set(options "")
@@ -118,9 +122,5 @@ if(NOT EMSCRIPTEN_BUILD)
         )
     endif()
 endif()
-#set_property(TARGET levtree++ PROPERTY OUTPUT_NAME $<TARGET_FILE_NAME:levtree++>)
-#get_target_property(LEVTREE_LIBS levtree++ OUTPUT_NAME)
-#get_target_property(TEST_VAR levtree++ INTERFACE_LINK_LIBRARIES)
 
-#message("dfdsg ${swig_generated_file_fullname}")
 

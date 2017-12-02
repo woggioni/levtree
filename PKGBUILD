@@ -6,7 +6,7 @@ pkgrel=1
 pkgdesc="Python 3.x module for fuzzy string search"
 license=("GPL")
 depends=('gcc')
-source=('git+ssh://git@oggio88.soon.it:1122/mnt/levtree#tag=v${pkgver}')
+source=("git+ssh://git@oggio88.soon.it:1122/mnt/git/levtree#tag=v${pkgver}")
 md5sums=('SKIP')
 
 _builddir=$srcdir/build
@@ -34,7 +34,7 @@ package_liblevtree() {
 
 package_python2-levtree() {
     depends=('python2' 'liblevtree')
-    pushd $srcdir/build/sip/python2
+    pushd $srcdir/build/src/swig/python2
     python2 setup.py install --optimize=1 --root=$pkgdir/
     popd
 }
@@ -42,7 +42,7 @@ package_python2-levtree() {
 
 package_python-levtree() {
     depends=('python' 'liblevtree')
-    pushd $srcdir/build/sip/python3
+    pushd $srcdir/build/src/swig/python3
     python setup.py install --optimize=1 --root=$pkgdir/
     popd
 }
