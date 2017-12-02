@@ -6,7 +6,7 @@ pkgrel=1
 pkgdesc="Python 3.x module for fuzzy string search"
 license=("GPL")
 depends=('gcc')
-source=('levtree.tar.gz')
+source=('git+ssh://git@oggio88.soon.it:1122/mnt/levtree#tag=v${pkgver}')
 md5sums=('SKIP')
 
 _builddir=$srcdir/build
