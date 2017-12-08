@@ -1,6 +1,6 @@
 %module levtreecpp
 %{
-#include "levtree++/Levtree.hpp"
+#include <levtree++/Levtree.hpp>
 %}
 
 %include "std_string.i"
@@ -13,5 +13,5 @@ namespace std
     %template(StringVector) vector<string>;
 }
 
-%include "levtree/common.h"
-%include "levtree++/Levtree.hpp"
+%include <levtree/common.h>
+%include <levtree++/Levtree.hpp>
