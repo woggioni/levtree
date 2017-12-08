@@ -1,4 +1,4 @@
-
+#!${SETUP_INTERP}
 from distutils.core import setup, Extension
 import sys
 import os
