@@ -26,12 +26,12 @@ struct levtree_tree
     void (*distance_calculator)(levtree_tree* tree, const uint32_t* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j);
 };
 
-levtree_tree* levtree_tree_init(const uint8_t **words, index_t words_count);
+levtree_tree* levtree_tree_init(const char **words, index_t words_count);
 void levtree_tree_free(levtree_tree* tree);
-void levtree_tree_search(levtree_tree* tree, const uint8_t* wordkey, index_t n_of_matches);
+void levtree_tree_search(levtree_tree* tree, const char* wordkey, index_t n_of_matches);
 void levtree_tree_set_algorithm(levtree_tree *tree, levtree_algorithm algo);
 void levtree_tree_set_case_sensitive(levtree_tree *tree, uint8_t boolean);
-void levtree_tree_add_word(levtree_tree* tree, const uint8_t* keyword, index_t id);
+void levtree_tree_add_word(levtree_tree* tree, const char* keyword, index_t id);
 
 levtree_result levtree_tree_get_result(levtree_tree* tree, index_t index);
 

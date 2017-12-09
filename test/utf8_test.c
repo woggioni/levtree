@@ -6,7 +6,7 @@ int main()
 {
     setlocale(LC_ALL, "");
     levtree_tree * tree;
-    uint8_t * wordlist[] = {"città", "ciao", "coniglio", "casa", "cane", "scuola", "Papà", "stacippa", "Cornacchia"};
+    const char * wordlist[] = {"città", "ciao", "coniglio", "casa", "cane", "scuola", "Papà", "stacippa", "Cornacchia"};
     tree = levtree_tree_init(wordlist, 9);
     index_t i;
     levtree_result res;

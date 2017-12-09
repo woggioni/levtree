@@ -24,10 +24,10 @@ Levtree::Levtree(const std::vector<string> &wordvector) :
 {
     const size_t word_count = wordvector.size();
 	//printf("SIZE: %u\n", size);
-    std::vector<const uint8_t*> ptvector(word_count);
+    std::vector<const char*> ptvector(word_count);
     for (size_t i = 0; i < word_count; i++)
 	{
-        ptvector[i] = (const uint8_t*) &wordvector[i][0];
+        ptvector[i] = &wordvector[i][0];
 	}
     tree = levtree_tree_init(ptvector.data(), word_count);
 }
@@ -39,7 +39,7 @@ Levtree::~Levtree()
 
 vector<LevtreeResult> Levtree::search(const string &text, size_t n)
 {
-    levtree_tree_search(tree, (const uint8_t *) text.data(), n);
+    levtree_tree_search(tree, text.data(), n);
 	vector<LevtreeResult> results;
 	levtree_result tmp;
     for (size_t i = 0; i < n; i++)
@@ -53,7 +53,7 @@ vector<LevtreeResult> Levtree::search(const string &text, size_t n)
 
 void Levtree::addWord(const string &word)
 {
-    levtree_tree_add_word(tree, (uint8_t *) word.data(), tree->entry_count);
+    levtree_tree_add_word(tree, word.data(), tree->entry_count);
     wordvector.push_back(word);
 }
 

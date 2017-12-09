@@ -5,18 +5,18 @@
 int main()
 {
     FILE * file = fopen(DICTIONARY_FILE, "r");
-    const uint8_t * searches[] = {"camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"};
+    const char * searches[] = {"camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"};
 
-    const uint8_t * wordlist[] = {"csoa"};
+    const char * wordlist[] = {"csoa"};
     levtree_tree * tree = levtree_tree_init(wordlist, 1);
     index_t i, j;
     levtree_result res;
-    const uint8_t buffer[50];
+    char buffer[50];
     i = 0;
 
     while(!feof(file))
     {
-        fscanf(file, "%s\n", (char *) buffer);
+        fscanf(file, "%s\n", buffer);
         levtree_tree_add_word(tree, buffer, i++);
     }
 

@@ -10,22 +10,23 @@
 #define min3(a,b,c) ((a)< (b) ? min((a),(c)) : min((b),(c)))
 #define min4(a,b,c,d) ((a)< (b) ? min3((a),(c),(d)) : min3((b),(c),(d)))
 
-static inline uint8_t utf8_char_size(const uint8_t* first_byte)
+static inline uint8_t utf8_char_size(const uint8_t* cursor)
 {
-    if((*first_byte & 0x80) == 0)
+    if((*cursor & 0x80) == 0)
         return 1;
-    else if((*first_byte & 0xc0) == 0xc0)
+    else if((*cursor & 0xc0) == 0xc0)
         return 2;
-    else if((*first_byte & 0xc0) == 0xc0)
+    else if((*cursor & 0xc0) == 0xc0)
         return 3;
-    else if((*first_byte & 0xc0) == 0xc0)
+    else if((*cursor & 0xc0) == 0xc0)
         return 4;
-    fprintf(stderr, "Unrecognized charachter %#02x\n", *first_byte);
+    fprintf(stderr, "Unrecognized charachter %#02x\n", *cursor);
     return 1;
 }
 
-static inline uint32_t read_utf8_char(const uint8_t* ptr, uint8_t* size)
+static inline uint32_t read_utf8_char(const char* cursor, uint8_t* size)
 {
+    const uint8_t *ptr = (const uint8_t *) cursor;
     uint8_t sz = utf8_char_size(ptr);
     if(size) *size = sz;
     uint32_t result = 0;
@@ -34,7 +35,6 @@ static inline uint32_t read_utf8_char(const uint8_t* ptr, uint8_t* size)
         result <<= 8;
         result |= ptr[i];
     }
-    char* ch = &result;
     return result;
 }
 
@@ -142,9 +142,8 @@ static inline void levtree_tree_add_node(levtree_tree * tree, uint32_t key, inde
 }
 
 
-void levtree_tree_add_word(levtree_tree * tree, const uint8_t * keyword, index_t id)
+void levtree_tree_add_word(levtree_tree * tree, const char *keyword, index_t id)
 {
-    char * str = keyword;
     if(tree->allocated)
     {
         levtree_tree_delete_rows(tree);
@@ -165,7 +164,7 @@ void levtree_tree_add_word(levtree_tree * tree, const uint8_t * keyword, index_t
         }
     }
 
-    const uint8_t *ptr = keyword;
+    const char *ptr = keyword;
     while(1)
     {
         uint8_t size;
@@ -218,7 +217,7 @@ void levtree_tree_add_word(levtree_tree * tree, const uint8_t * keyword, index_t
     }
 }
 
-levtree_tree* levtree_tree_init(const uint8_t ** words, index_t words_count)
+levtree_tree* levtree_tree_init(const char ** words, index_t words_count)
 {
     levtree_tree *tree = malloc(sizeof(levtree_tree));
     tree->node_count = 0;
@@ -276,7 +275,7 @@ void lprint(levtree_standing * s)
     }
 }
 
-void levtree_tree_search(levtree_tree * tree, const uint8_t * wordkey, index_t n_of_matches)
+void levtree_tree_search(levtree_tree * tree, const char * wordkey, index_t n_of_matches)
 {
     if(!tree->allocated)
     {
@@ -396,6 +395,7 @@ void levtree_tree_set_case_sensitive(levtree_tree * tree, uint8_t boolean)
 
 static void levenshtein_distance(levtree_tree * tree, const uint32_t * wordkey, index_t wordlen, index_t * path, index_t pathLength, index_t j)
 {
+    (void)(pathLength);
     index_t * prow = tree->nodes[tree->nodes[path[j]].parent].row;
     index_t * crow = tree->nodes[path[j]].row;
     crow[0] = prow[0] + 1;
