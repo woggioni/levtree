@@ -31,3 +31,5 @@ if(NOT EMSCRIPTEN_BUILD)
     endforeach()
 endif()
 
+add_executable(utf8_test utf8_test.c)
+target_link_libraries(utf8_test levtree)

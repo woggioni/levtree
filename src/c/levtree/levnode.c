@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-void levnode_init(levnode* node, char key, index_t index)
+void levtree_levnode_init(levtree_levnode* node, uint32_t key, index_t index)
 {
     node->key = key;
     node->id = index;
@@ -15,18 +15,18 @@ void levnode_init(levnode* node, char key, index_t index)
     node->processed = 0;
 }
 
-void levnode_init_copy(levnode *dest, levnode* src)
+void levtree_levnode_init_copy(levtree_levnode *dest, levtree_levnode* src)
 {
     *dest = *src;
     dest->row = NULL;
 }
 
-void levnode_free(levnode* node)
+void levtree_levnode_free(levtree_levnode* node)
 {
     free(node->row);
 }
 
-void levnode_alloc(levnode* node, index_t size)
+void levtree_levnode_alloc(levtree_levnode* node, index_t size)
 {
     node->row = (unsigned*) malloc( sizeof(unsigned)*size );
 }

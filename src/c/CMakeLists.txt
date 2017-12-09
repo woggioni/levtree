@@ -4,9 +4,7 @@ project(LEVTREE)
 set(SOURCES
     levtree/levnode.c
     levtree/levtree_standing.c
-    levtree/wlevtree.c
     levtree/levtree.c
-    levtree/wlevnode.c
     levtree/common.h
 )
 

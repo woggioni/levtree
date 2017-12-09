@@ -2,35 +2,37 @@
 #define LEVTREE_H
 
 #include <stdlib.h>
-#include "levtree/common.h"
-#include "levtree/levnode.h"
-#include "levtree/levtree_standing.h"
+#include <stdint.h>
 
-typedef struct levtree levtree;
+#include <levtree/common.h>
+#include <levtree/levnode.h>
+#include <levtree/levtree_standing.h>
 
-struct levtree
+typedef struct levtree_tree levtree_tree;
+
+struct levtree_tree
 {
     index_t maxsize;
-    byte_t allocated;
-    byte_t torealloc;
-    levnode* nodes;
+    uint8_t allocated;
+    uint8_t torealloc;
+    levtree_levnode* nodes;
     index_t node_count;
     index_t node_size;
     index_t* entries; //vettore di interi che contiene la posizione di ogni parola nel vettore dei nodi
     index_t entry_count;
     index_t entry_size;
     levtree_standing* standing;
-    byte_t (*checker)(char key1, char key2);
-    void (*distance_calculator)(levtree* tree, const char* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j);
+    uint8_t (*checker)(uint32_t key1, uint32_t key2);
+    void (*distance_calculator)(levtree_tree* tree, const uint32_t* wordkey, index_t wordlen, index_t* path, index_t pathLength, index_t j);
 };
 
-void levtree_init(levtree* tree, char **words, index_t words_count);
-void levtree_free(levtree* tree);
-void levtree_search(levtree* tree, const char* wordkey, index_t n_of_matches);
-void levtree_set_algorithm(levtree *tree, levtree_algorithm algo);
-void levtree_set_case_sensitive(levtree *tree, byte_t boolean);
-void levtree_add_word(levtree* tree, const char* keyword, index_t id);
+levtree_tree* levtree_tree_init(const uint8_t **words, index_t words_count);
+void levtree_tree_free(levtree_tree* tree);
+void levtree_tree_search(levtree_tree* tree, const uint8_t* wordkey, index_t n_of_matches);
+void levtree_tree_set_algorithm(levtree_tree *tree, levtree_algorithm algo);
+void levtree_tree_set_case_sensitive(levtree_tree *tree, uint8_t boolean);
+void levtree_tree_add_word(levtree_tree* tree, const uint8_t* keyword, index_t id);
 
-levtree_result levtree_get_result(levtree* tree, index_t index);
+levtree_result levtree_tree_get_result(levtree_tree* tree, index_t index);
 
 #endif // LEVTREE_H

@@ -85,7 +85,7 @@ extern void levtree_standing_add_result(levtree_standing* s, index_t id, index_t
     }
     levtree_result *r = s->bottom;
     index_t insertion_point;
-    byte_t insert=0;
+    uint8_t insert=0;
     
     if(s->count < s->size)
     {
@@ -105,6 +105,6 @@ extern void levtree_standing_add_result(levtree_standing* s, index_t id, index_t
 	fflush(stdout);
     if(insert)
     {
-        levtree_standing_insert(s,insertion_point,entry);
+        levtree_standing_insert(s, insertion_point,entry);
     }
 }

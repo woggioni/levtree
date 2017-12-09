@@ -6,7 +6,7 @@
 
 extern "C"
 {
-#include "levtree/wlevtree.h"
+#include "levtree/levtree.h"
 }
 
 namespace levtree
@@ -24,7 +24,7 @@ namespace levtree
 
     class Levtree
     {
-        wlevtree * tree;
+        levtree_tree * tree;
         std::vector<std::string> wordvector;
     public:
         void addWord(const std::string & word);

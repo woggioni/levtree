@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 project(levtree)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_EXTENSIONS OFF)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(CMAKE_INSTALL_PREFIX:PATH=/usr/local CACHE STRING "")
 option(EMSCRIPTEN_BUILD "Enable to build with emscripten" OFF)
 option(PYTHON2_BINDINGS "Build Python 2 bindings with SWIG" OFF)

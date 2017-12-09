@@ -1,5 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
+
+#include <stdint.h>
 typedef enum
 {
     LEVENSHTEIN,
@@ -7,6 +9,5 @@ typedef enum
 }
 levtree_algorithm;
 
-typedef unsigned index_t;
-typedef unsigned char byte_t;
+typedef uint32_t index_t;
 #endif // COMMON_H
