@@ -1,26 +1,35 @@
 cmake_minimum_required(VERSION 3.0)
 
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dictionary.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-set(DICTIONARY_FILE ${CMAKE_CURRENT_BINARY_DIR}/dictionary.txt)
 
 if(EMSCRIPTEN_BUILD)
     set(DICTIONARY_FILE dictionary.txt)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --preload-file '${CMAKE_CURRENT_BINARY_DIR}/dictionary.txt@${DICTIONARY_FILE}'")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s WASM=1 --llvm-lto 3 -s ALLOW_MEMORY_GROWTH=1")
 else()
     set(DICTIONARY_FILE ${CMAKE_CURRENT_BINARY_DIR}/dictionary.txt)
 endif()
-add_executable(cpptest test.cpp)
-add_executable(ctest test.c)
 
-target_compile_definitions(cpptest PRIVATE -DDICTIONARY_FILE="${DICTIONARY_FILE}")
-target_compile_definitions(ctest PRIVATE -DDICTIONARY_FILE="${DICTIONARY_FILE}")
+EMBED(ID EMBEDDED_DICTIONARY_FILE
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/embeddded/dictionary
+    BLOBS levtree_test_dictionary_file=${CMAKE_CURRENT_SOURCE_DIR}/dictionary.txt
+)
+
+create_executable(cpptest ALL
+    SOURCES test.cpp ${EMBEDDED_DICTIONARY_FILE_OUTPUT}
+    PRIVATE_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/embeddded
+    PRIVATE_LIBS levtree++_static
+)
+
+create_executable(ctest ALL
+    SOURCES test.c ${EMBEDDED_DICTIONARY_FILE_OUTPUT}
+    PRIVATE_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/embeddded
+    PRIVATE_LIBS levtree_static
+)
 
 add_test(cxx_test cpptest)
 add_test(c_test ctest)
 
-target_link_libraries(ctest levtree)
-target_link_libraries(cpptest levtree++)
 
 if(NOT EMSCRIPTEN_BUILD)
     foreach(PY_VERSION IN ITEMS 2 3)
@@ -31,5 +40,8 @@ if(NOT EMSCRIPTEN_BUILD)
     endforeach()
 endif()
 
-add_executable(utf8_test utf8_test.c)
-target_link_libraries(utf8_test levtree)
+create_executable(utf8_test ALL
+    SOURCES utf8_test.c
+    PRIVATE_LIBS levtree_static
+)
+

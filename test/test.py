@@ -11,7 +11,7 @@ def ptest():
     tree=Levtree(tuple(wordlist))
     tree.setCaseSensitive(False)
     tree.setAlgorithm(levtree.DAMERAU_LEVENSHTEIN)
-    for i in range(10):
+    for i in range(50):
         for key in searches:
             res = tree.search(key,6)
     

@@ -9,25 +9,18 @@ set(SOURCES
 )
 
 
-if(NOT EMSCRIPTEN_BUILD)
-    set(LIBTYPE SHARED)
-else()
-    set(LIBTYPE STATIC)
-endif()
+create_library(levtree STATIC SHARED ALL INSTALL
+    SOURCES ${SOURCES}
+    PUBLIC_INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:include>
+    PROPERTIES OUTPUT_NAME levtree LINKER_LANGUAGE C
+)
 
-add_library (levtree ${LIBTYPE} ${SOURCES})
-
-target_include_directories(levtree PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:include>
-        )
-
-install(TARGETS levtree EXPORT levtreeConfig
-    ARCHIVE  DESTINATION lib
-    LIBRARY  DESTINATION lib
-    RUNTIME  DESTINATION bin)  # This is for Windows
-install(EXPORT levtreeConfig DESTINATION share/levtree/cmake)
-export(TARGETS levtree FILE levtreeConfig.cmake)
+#install(TARGETS levtree_shared EXPORT levtreeConfig
+#    ARCHIVE  DESTINATION lib
+#    LIBRARY  DESTINATION lib
+#    RUNTIME  DESTINATION bin)  # This is for Windows
+#install(EXPORT levtreeConfig DESTINATION share/levtree/cmake)
+#export(TARGETS levtree_shared FILE levtreeConfig.cmake)
 
 file(GLOB_RECURSE HEADERS
   "*.h" "*.hpp"

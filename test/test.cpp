@@ -1,12 +1,12 @@
 #include <cstdio>
 #include <cstring>
-#include <sstream>
-#include <fstream>
+#include <string>
 #include <codecvt>
 #include <chrono>
 #include <map>
 
 #include "levtree++/Levtree.hpp"
+#include "dictionary.h"
 
 #ifdef EMSCRIPTEN
 //#include <emscripten/bind.h>
@@ -62,20 +62,22 @@ public:
 
 int main()
 {
-    std::ifstream ifs(DICTIONARY_FILE);
-
-    if(!ifs)
-    {
-        fprintf(stderr, "Cannot open input file '%s'", DICTIONARY_FILE);
-        exit(-1);
-    }
-
-    string word;
     vector<string> wordlist;
-
-    while(std::getline(ifs, word))
+    size_t cursor = 0, start = 0;
+    int c;
+    while(cursor < sizeof(levtree_test_dictionary_file))
     {
-        wordlist.push_back(word);
+        c = levtree_test_dictionary_file[cursor];
+        if(c == '\n')
+        {
+            size_t sz = cursor - start;
+            if(sz > 1)
+            {
+                wordlist.push_back(std::string((const char *) &levtree_test_dictionary_file[start], sz));
+            }
+            start = cursor+1;
+        }
+        cursor++;
     }
 
     string searches[] = {"camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"};
@@ -83,7 +85,7 @@ int main()
     Levtree tree(wordlist);
     Chronometer chr;
 
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 30; i++)
     {
         for(j = 0; j < 6; j++)
         {
@@ -108,45 +110,3 @@ int main()
     return 0;
 }
 
-/*
-int main()
-{
-	FILE *file = fopen("/usr/share/dict/cracklib-small","r");
-	const wchar_t* searches[] = {L"camel", L"coriolis", L"mattel", L"cruzer", L"cpoper", L"roublesoot"};
-    wlevtree tree;
-    wchar_t* wordlist[] = {L"csoa"};
-    wlevtree_init(&tree, wordlist,1);
-    index_t i,j;
-    levtree_result res;
-    wchar_t buffer[50];
-
-    i=0;
-    while(!feof(file))
-    {
-		fscanf(file, "%s\n", buffer);
-		wlevtree_add_word(&tree, buffer, i++);
-	}
-
-	for(i=0; i<50; i++)
-	{
-		for(j=0; j<6; j++)
-		{
-			wlevtree_search(&tree, searches[j], 6);
-		}
-	}
-
-	for(j=0; j<6; j++)
-	{
-		wlevtree_search(&tree, searches[j], 6);
-
-		for(i=0; i<tree.standing->count;i++)
-		{
-			res = wlevtree_get_result(&tree,i);
-			printf("id: %u\tdistance: %u\n",res.id,res.distance);
-		}
-		puts("");
-	}
-
-    wlevtree_free(&tree);
-    return 0;
-}*/

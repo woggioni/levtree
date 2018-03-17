@@ -1,26 +1,43 @@
 #include <stdio.h>
+#include <string.h>
+
 #include "levtree/levtree.h"
-#include <locale.h>
+#include "dictionary.h"
 
 int main()
 {
-    FILE * file = fopen(DICTIONARY_FILE, "r");
     const char * searches[] = {"camel", "coriolis", "mattel", "cruzer", "cpoper", "roublesoot"};
-
     const char * wordlist[] = {"csoa"};
     levtree_tree * tree = levtree_tree_init(wordlist, 1);
     index_t i, j;
     levtree_result res;
-    char buffer[50];
+    char buffer[1024];
     i = 0;
-
-    while(!feof(file))
+    size_t cursor = 0, start = 0;
+    int c;
+    while(cursor < sizeof(levtree_test_dictionary_file))
     {
-        fscanf(file, "%s\n", buffer);
-        levtree_tree_add_word(tree, buffer, i++);
+        c = levtree_test_dictionary_file[cursor];
+        if(c == '\n')
+        {
+            size_t sz = cursor - start;
+            if(sz > 1024)
+            {
+                fprintf(stderr, "word too big, size: %zu\n", sz);
+                exit(-1);
+            }
+            else if(sz > 1)
+            {
+                memcpy(buffer, &levtree_test_dictionary_file[start], sz);
+                buffer[sz] = '\0';
+                levtree_tree_add_word(tree, buffer, i++);
+            }
+            start = cursor+1;
+        }
+        cursor++;
     }
 
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 30; i++)
     {
         for(j = 0; j < 6; j++)
         {

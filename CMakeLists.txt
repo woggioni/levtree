@@ -1,25 +1,23 @@
 cmake_minimum_required(VERSION 3.0)
 project(levtree)
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_EXTENSIONS OFF)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_EXTENSIONS OFF)
+if(${CMAKE_VERSION} VERSION_GREATER "3.9")
+    cmake_policy(VERSION 3.9)
+endif()
 
-set(CMAKE_INSTALL_PREFIX:PATH=/usr/local CACHE STRING "")
+add_subdirectory(cmake)
+SETUP_STANDARD_FLAGS()
+
+set(CMAKE_INSTALL_PREFIX /usr/local CACHE PATH "")
 option(EMSCRIPTEN_BUILD "Enable to build with emscripten" OFF)
 option(PYTHON2_BINDINGS "Build Python 2 bindings with SWIG" OFF)
 option(PYTHON3_BINDINGS "Build Python 3 bindings with SWIG" OFF)
 option(JAVA_BINDINGS "Build Java bindings with SWIG" OFF)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-elseif(EMSCRIPTEN_BUILD)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic --bind")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic --bind")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s WASM=1 -s TOTAL_MEMORY=67108864 --preload-file ./cracklib-small")
-endif()
+#if(EMSCRIPTEN_BUILD)
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --bind")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --bind")
+#endif()
 
 add_subdirectory(src)
 
