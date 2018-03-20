@@ -16,9 +16,9 @@ static inline uint8_t utf8_char_size(const uint8_t* cursor)
         return 1;
     else if((*cursor & 0xc0) == 0xc0)
         return 2;
-    else if((*cursor & 0xc0) == 0xc0)
+    else if((*cursor & 0xe0) == 0xe0)
         return 3;
-    else if((*cursor & 0xc0) == 0xc0)
+    else if((*cursor & 0xf0) == 0xf0)
         return 4;
     fprintf(stderr, "Unrecognized charachter %#02x\n", *cursor);
     return 1;
